@@ -1,0 +1,9 @@
+{
+  "name": "zmk-parser",
+  "version": "1.0.0",
+  "description": "Parse ZMK keymaps",
+  "main": "index.js",
+  "repository": "https://github.com/bmcgavin/zmk-parser.git",
+  "author": "Richard Jones <rich@linuxplicable.org>",
+  "license": "MIT"
+}
