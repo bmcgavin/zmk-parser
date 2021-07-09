@@ -135,8 +135,8 @@ function map<A, B>(parser: Parser<A>, fn: (val: A) => B): Parser<B> {
 // bindings = 'bindings' [ binding ]
 
 interface Dtsi {
-  keymap: Keymap;
-  combos: Combos;
+  keymap: Keymap | undefined;
+  combos: Combos | undefined;
 }
 
 interface Keymap {
@@ -292,14 +292,29 @@ const combos = map(
   ([_d, _c, _b, _cm, combos]): Combos => combos
 )
 
+const dtsiOptions = map(
+  sequence<any>([
+    optional(combos),
+    optional(keymap)
+  ]),
+  ([combos, keymap]): Dtsi => ({
+    keymap,
+    combos
+  })
+);
+
 const dtsi = map(
-  sequence<any>([optional(combos), optional(keymap), optional(combos)]),
-  ([c1, keymap, c2]): Dtsi => {
-    const combos = c1 == null ? c2 : c1
-    return {
-      keymap,
-      combos
+  sequence<any>([count(dtsiOptions, 2)]),
+  ([options]): Dtsi => {
+    let dtsi: Dtsi = {
+      keymap: undefined,
+      combos: undefined
     }
+    for (const option of options) {
+      if (option.keymap !== null) dtsi.keymap = option.keymap;
+      if (option.combos !== null) dtsi.combos = option.combos;
+    }
+    return dtsi
   }
 );
 
@@ -309,5 +324,7 @@ function example(code: string) {
 
 example("/ { keymap { compatible = \"zmk,keymap\"; default_layer { bindings = < &trans >; }; raise_layer { bindings = < &kp N2 &kp N3 &bt SEL 0 >; }; }; }; / { combos { compatible = \"zmk,combos\"; combo_f1 { slow-release; timeout-ms = <50>; key-positions = <13 25>; bindings = <&kp F1>; layers = <1>; }; combo_n1 { timeout-ms = <50>; key-positions = <13 25>; bindings = <&kp N1>; }; }; }; ");
 example("/ { combos { compatible = \"zmk,combos\"; combo_f1 { slow-release; timeout-ms = <50>; key-positions = <13 25>; bindings = <&kp F1>; layers = <1>; }; combo_n1 { timeout-ms = <50>; key-positions = <13 25>; bindings = <&kp N1>; }; }; }; / { keymap { compatible = \"zmk,keymap\"; default_layer { bindings = < &trans >; }; raise_layer { bindings = < &kp N2 &kp N3 &bt SEL 0 >; }; }; };");
+example("/ { combos { compatible = \"zmk,combos\"; combo_f1 { slow-release; timeout-ms = <50>; key-positions = <13 25>; bindings = <&kp F1>; layers = <1>; }; combo_n1 { timeout-ms = <50>; key-positions = <13 25>; bindings = <&kp N1>; }; }; };");
+example("/ { keymap { compatible = \"zmk,keymap\"; default_layer { bindings = < &trans >; }; raise_layer { bindings = < &kp N2 &kp N3 &bt SEL 0 >; }; }; };");
 
 const ctx = { index: 0 };
