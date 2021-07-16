@@ -1,9 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
+    "target": "es2015",
+    "module": "es2015",
     "strict": true,
     "esModuleInterop": true,
-    "outDir": "dist"
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "jsx": "react"
   }
 }
