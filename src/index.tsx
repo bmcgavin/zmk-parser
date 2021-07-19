@@ -1,5 +1,11 @@
 import React from "react";
-import { render } from "react-dom";
+import ReactDOM from "react-dom";
+// import * as serviceWorker from './serviceworker'
 import { ParserComponent } from "./ui";
 
-render(<ParserComponent />, document.body)
+ReactDOM.render(
+    <React.StrictMode>
+        <ParserComponent />
+    </React.StrictMode>,
+    document.getElementById('parser')
+)

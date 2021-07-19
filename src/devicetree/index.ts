@@ -1,3 +1,4 @@
+import { Dtsi } from './types';
 import { parse } from './impl';
 
-export default parse;
+export { parse, Dtsi };

@@ -11,30 +11,30 @@
 // combomap = timeout-ms | key-positions | bindings
 // bindings = 'bindings' [ binding ]
 
-export interface Dtsi {
+export type Dtsi = {
   keymap: Keymap | undefined;
   combos: Combos | undefined;
 }
 
-export interface Keymap {
-  keymap: Layer[]
+export type Keymap = {
+  layers: Layer[]
 }
 
-export interface Layer {
+export type Layer = {
   name: string
   bindings: Binding[]
 }
 
-export interface Binding {
+export type Binding = {
   index: number
   output: string
 }
 
-export interface Combos {
+export type Combos = {
   combos: Combo[]
 }
 
-export interface Combo {
+export type Combo = {
   name: string
   timeout: number
   bindings: Binding[]

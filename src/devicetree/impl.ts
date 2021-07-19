@@ -1,5 +1,5 @@
 import { map, regex, sequence, many, str, optional, count } from '../parser';
-import { Dtsi, Binding, Layer, Keymap, Combos, Combo } from './types';
+import { Dtsi, Binding, Layer, Keymap, Combo, Combos } from './types';
 
 const bindingIdent = regex(/\&[^\&>]+/g, "binding")
 const dtsiMarker = regex(/\/\s+\{\s*/g, "/ {");
@@ -45,7 +45,7 @@ const layer = map(
 
 const keymap = map(
   sequence<any>([keymapMarker, brace, compatibleMarker, many(layer), brace]),
-  ([_keymap, _lb, _compat, layers, _rb]): Keymap => layers
+  ([_keymap, _lb, _compat, layers, _rb]): Keymap => ({layers: layers})
 );
 
 const comboTimeout = map(
