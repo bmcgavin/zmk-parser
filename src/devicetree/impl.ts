@@ -116,7 +116,9 @@ const combo = map(
 
 const combos = map(
   sequence<any>([str("combos"), brace, compatibleMarker, many(combo), brace]),
-  ([_c, _b, _cm, combos]): Combos => combos
+  ([_c, _b, _cm, combos]): Combos => ({
+    combos
+  })
 )
 
 const dtsiOptions = map(

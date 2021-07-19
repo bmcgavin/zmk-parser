@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
-import { Binding } from 'src/devicetree/types';
+import React from 'react';
+import { sanitise } from '../../sanitiser';
 
 import { parse, Dtsi } from '../../devicetree'
-import keymapUploadHandler from '../../handlers/keymap'
-import { BindingComponent } from '../Dtsi/BindingComponent';
 import { DtsiComponent } from '../Dtsi/DtsiComponent';
 
 type Props = {}
@@ -35,7 +33,11 @@ export default class ParserApp extends React.Component<Props, State> {
         parseError: "",
       }
       try {
-        state.dtsi = parse(this.state.keymap) as Dtsi
+        console.log("KM")
+        console.log(this.state.keymap)
+        console.log("KMS")
+        console.log(sanitise(this.state.keymap))
+        state.dtsi = parse(sanitise(this.state.keymap)) as Dtsi
       } catch (e) {
         console.log("e")
         console.log(e)
@@ -48,7 +50,7 @@ export default class ParserApp extends React.Component<Props, State> {
     })
   }
 
-  onChange = (e: React.FormEvent<HTMLInputElement>): void => {
+  onChange = (e: React.FormEvent<HTMLTextAreaElement>): void => {
     this.setState({ keymap: e.currentTarget.value }, () => {
       console.log("onChange")
       console.log(this.state.keymap)
@@ -63,15 +65,18 @@ export default class ParserApp extends React.Component<Props, State> {
     const dtsi = this.state.dtsi
     const parseError = this.state.parseError
 
-    
+    let dtsiComponent = <></>
+      if (dtsi !== undefined) {
+        dtsiComponent = <DtsiComponent combos={dtsi.combos} keymap={dtsi.keymap}></DtsiComponent>
+      }
     return <div className="Parser">
       <header className="Parser-header">
         <h3>ZMK Parser</h3>
       </header>
       <div>
-        DTSI: <DtsiComponent dtsi={dtsi}></DtsiComponent>
+        DTSI: {dtsiComponent}
       </div>
-      <input type="textarea" name="keymap" onChange={this.onChange}></input>
+      <textarea name="keymap" onChange={this.onChange}></textarea>
       <div>
         parseError: {parseError}
       </div>

@@ -9,6 +9,9 @@ const removeComments: ArraySanitiser = (code: string[]) =>
 const removeSpaces: ArraySanitiser = (code: string[]) =>
   code.map(line => line.replace(/\s\s+/g, " "))
 
+const removeTabs: ArraySanitiser = (code: string[]) =>
+  code.map(line => line.replace(/\t+/g, " "))
+
 const removeNewlines: ArraySanitiser = (code: string[]) =>
   code.filter(line => line.length != 0)
 
@@ -22,12 +25,13 @@ export function sanitise(code: string): string {
     removeComments,
     removeIncludes,
     removeSpaces,
+    removeTabs,
     removeNewlines,
   ]
   for (const fn of arraySanitisers) {
     codeArray = fn(codeArray)
   }
-  const joiner: TransformingSanitiser = (code: string[]) => code.join('')
+  const joiner: TransformingSanitiser = (code: string[]) => code.join(' ')
   let codeString = joiner(codeArray)
 
   const stringSanitisers: StringSanitiser[] = [
