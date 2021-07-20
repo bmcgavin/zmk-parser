@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-// import * as serviceWorker from './serviceworker'
+import './index.css';
 import { ParserComponent } from "./ui";
 
 ReactDOM.render(

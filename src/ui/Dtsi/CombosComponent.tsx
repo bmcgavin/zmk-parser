@@ -6,6 +6,7 @@ import { ComboComponent } from './ComboComponent';
 export const CombosComponent: React.FC<Combos> = ({combos}: Combos) => {
     
     return <div>
+        <span>Combos</span>
         {combos.map(function(combo, index){
             return <ComboComponent key={combo.name} bindingIndex={index} combo={combo}></ComboComponent>;
         })}

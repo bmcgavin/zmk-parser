@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 
 import  { Binding } from '../../devicetree/types';
 
-export const BindingComponent: React.FC<Binding> = ({index, output}: Binding) => {
+type BindingWithStyle = {
+    style: CSSProperties,
+    index: number,
+    output: string
+}
 
-    return <div>{output}</div>
+export const BindingComponent: React.FC<BindingWithStyle> = ({style, index, output}: BindingWithStyle) => {
+
+    return <div className="binding" style={style}>{output}</div>
 }
 

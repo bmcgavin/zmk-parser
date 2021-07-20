@@ -7,8 +7,8 @@ import { KeymapComponent } from './KeymapComponent';
 export const DtsiComponent: React.FC<Dtsi> = ({keymap, combos}: Dtsi) => {
     let combosComponent, keymapComponent = <></>
 
-    console.log(keymap)
-    console.log(combos)
+    // console.log(keymap)
+    // console.log(combos)
     if (combos?.combos !== undefined) {
         combosComponent = <CombosComponent combos={combos.combos}></CombosComponent>
     }

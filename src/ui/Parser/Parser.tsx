@@ -12,7 +12,7 @@ export type State = {
 };
 
 export const initialState: State = {
-  keymap: "",
+  keymap: "/ { keymap { compatible = \"zmk,keymap\"; default_layer { bindings = < &trans >; }; raise_layer { bindings = < &kp N2 &kp N3 &bt SEL 0 >; }; }; combos { compatible = \"zmk,combos\"; combo_f1 { slow-release; timeout-ms = <50>; key-positions = <13 25>; bindings = <&kp F1>; layers = <1>; }; combo_n1 { timeout-ms = <50>; key-positions = <13 25>; bindings = <&kp N1>; }; }; }; ",
   dtsi: undefined,
   parseError: undefined,
 }
@@ -26,42 +26,45 @@ export default class ParserApp extends React.Component<Props, State> {
   }
 
   parseKeymap = (): void => {
-    console.log("parseKeymap")
+    // console.log("parseKeymap")
     this.setState((previousState: State) =>{
       const state = {
         ...previousState,
         parseError: "",
       }
       try {
-        console.log("KM")
-        console.log(this.state.keymap)
-        console.log("KMS")
-        console.log(sanitise(this.state.keymap))
+        // console.log("KM")
+        // console.log(this.state.keymap)
+        // console.log("KMS")
+        // console.log(sanitise(this.state.keymap))
         state.dtsi = parse(sanitise(this.state.keymap)) as Dtsi
       } catch (e) {
-        console.log("e")
-        console.log(e)
+        // console.log("e")
+        // console.log(e)
         state.parseError = e
       }
       return state
     }, () => {
-      console.log(this.state.dtsi);
-      console.log(this.state.parseError)
+      // console.log(this.state.dtsi);
+      // console.log(this.state.parseError)
     })
   }
 
   onChange = (e: React.FormEvent<HTMLTextAreaElement>): void => {
     this.setState({ keymap: e.currentTarget.value }, () => {
-      console.log("onChange")
-      console.log(this.state.keymap)
+      // console.log("onChange")
+      // console.log(this.state.keymap)
       this.parseKeymap()
     });
     
     
   };
 
-  // / { keymap { compatible = "zmk,keymap"; default_layer { bindings = < &trans >; }; raise_layer { bindings = < &kp N2 &kp N3 &bt SEL 0 >; }; }; combos { compatible = "zmk,combos"; combo_f1 { slow-release; timeout-ms = <50>; key-positions = <13 25>; bindings = <&kp F1>; layers = <1>; }; combo_n1 { timeout-ms = <50>; key-positions = <13 25>; bindings = <&kp N1>; }; }; }; 
+  /*
+/ { keymap { compatible = "zmk,keymap"; default_layer { bindings = < &trans >; }; raise_layer { bindings = < &kp N2 &kp N3 &bt SEL 0 >; }; }; combos { compatible = "zmk,combos"; combo_f1 { slow-release; timeout-ms = <50>; key-positions = <13 25>; bindings = <&kp F1>; layers = <1>; }; combo_n1 { timeout-ms = <50>; key-positions = <13 25>; bindings = <&kp N1>; }; }; }; 
+  */
   render() {
+    
     const dtsi = this.state.dtsi
     const parseError = this.state.parseError
 
@@ -76,7 +79,7 @@ export default class ParserApp extends React.Component<Props, State> {
       <div>
         DTSI: {dtsiComponent}
       </div>
-      <textarea name="keymap" onChange={this.onChange}></textarea>
+      <textarea name="keymap" onChange={this.onChange} value={this.state.keymap}></textarea>
       <div>
         parseError: {parseError}
       </div>
