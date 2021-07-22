@@ -1,14 +1,17 @@
 import React, { CSSProperties } from 'react';
 
-import  { Binding } from '../../devicetree/types';
+import { LayerKey } from '../Parser/Parser';
 
 type BindingWithStyle = {
+    onSelectedKeysChange: any,
+    selectedKeys: LayerKey[],
+    layer: number,
     style: CSSProperties,
     index: number,
     output: string
 }
 
-export const BindingComponent: React.FC<BindingWithStyle> = ({style, index, output}: BindingWithStyle) => {
+export const BindingComponent: React.FC<BindingWithStyle> = ({onSelectedKeysChange, selectedKeys, layer, style, index, output}: BindingWithStyle) => {
 
     return <div className="binding" style={style}>{output}</div>
 }

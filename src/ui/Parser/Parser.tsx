@@ -6,17 +6,35 @@ import { DtsiComponent } from '../Dtsi/DtsiComponent';
 
 import initialKeymap from '../../../test';
 
+export type LayerKey = {
+  layer: number[]
+  key: number[]
+}
+
+const initialLayer : number[]= []
+const initialKey: number[] = []
+let initialLayerKey: LayerKey = {
+  layer: initialLayer,
+  key: initialKey
+}
+initialLayerKey.layer = initialLayer
+initialLayerKey.key = initialKey
+const initialLayerKeys: LayerKey[] = [initialLayerKey]
+
+
 type Props = {}
 export type State = {
   keymap: string;
   dtsi: Dtsi | undefined;
   parseError: string | undefined;
+  selectedKeys: LayerKey[]
 };
 
 export const initialState: State = {
   keymap: initialKeymap,
   dtsi: undefined,
   parseError: undefined,
+  selectedKeys: initialLayerKeys
 }
 
 export default class ParserApp extends React.Component<Props, State> {
@@ -24,6 +42,13 @@ export default class ParserApp extends React.Component<Props, State> {
     super(props);
 
     this.state = initialState
+    this.handleSelectedKeysChange = this.handleSelectedKeysChange.bind(this)
+  }
+
+  handleSelectedKeysChange(selectedKeys: LayerKey[]) {
+    this.setState({
+      selectedKeys: selectedKeys
+    }, () => console.log(this.state))
   }
 
   componentDidMount() {
@@ -75,7 +100,7 @@ export default class ParserApp extends React.Component<Props, State> {
 
     let dtsiComponent = <></>
       if (dtsi !== undefined) {
-        dtsiComponent = <DtsiComponent combos={dtsi.combos} keymap={dtsi.keymap}></DtsiComponent>
+        dtsiComponent = <DtsiComponent onSelectedKeysChange={this.handleSelectedKeysChange} selectedKeys={this.state.selectedKeys} combos={dtsi.combos} keymap={dtsi.keymap}></DtsiComponent>
       }
     return <div className="Parser">
       <header className="Parser-header">

@@ -1,4 +1,5 @@
 .binding {
     max-width: max-content;
     display: inline-block;
+    background-color: white;
 }

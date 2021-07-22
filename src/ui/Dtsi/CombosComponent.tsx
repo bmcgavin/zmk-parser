@@ -1,14 +1,19 @@
 import React from 'react';
-import { Combos } from 'src/devicetree/types';
+import { Combo, Combos } from 'src/devicetree/types';
 
 import { ComboComponent } from './ComboComponent';
 
-export const CombosComponent: React.FC<Combos> = ({combos}: Combos) => {
+type CombosWithHandler = {
+    onSelectedKeysChange: any,
+    combos: Combo[]
+}
+
+export const CombosComponent: React.FC<CombosWithHandler> = ({onSelectedKeysChange, combos}: CombosWithHandler) => {
     
     return <div>
         <span>Combos</span>
         {combos.map(function(combo, index){
-            return <ComboComponent key={combo.name} bindingIndex={index} combo={combo}></ComboComponent>;
+            return <ComboComponent onSelectedKeysChange={onSelectedKeysChange} key={combo.name} bindingIndex={index} combo={combo}></ComboComponent>;
         })}
     </div>
 }

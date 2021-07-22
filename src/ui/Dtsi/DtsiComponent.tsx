@@ -1,19 +1,27 @@
 import React from 'react';
-import { Dtsi } from 'src/devicetree/types';
+import { Combos, Keymap } from 'src/devicetree/types';
+import { LayerKey } from '../Parser/Parser';
 
 import { CombosComponent } from './CombosComponent';
 import { KeymapComponent } from './KeymapComponent';
 
-export const DtsiComponent: React.FC<Dtsi> = ({keymap, combos}: Dtsi) => {
+type DtsiWithHandler = {
+    onSelectedKeysChange: any,
+    selectedKeys: LayerKey[],
+    keymap: Keymap | undefined,
+    combos: Combos | undefined
+}
+
+export const DtsiComponent: React.FC<DtsiWithHandler> = ({onSelectedKeysChange, selectedKeys, keymap, combos}: DtsiWithHandler) => {
     let combosComponent, keymapComponent = <></>
 
     // console.log(keymap)
     // console.log(combos)
     if (combos?.combos !== undefined) {
-        combosComponent = <CombosComponent combos={combos.combos}></CombosComponent>
+        combosComponent = <CombosComponent onSelectedKeysChange={onSelectedKeysChange} combos={combos.combos}></CombosComponent>
     }
     if (keymap !== undefined) {
-        keymapComponent = <KeymapComponent layers={keymap.layers}></KeymapComponent>
+        keymapComponent = <KeymapComponent onSelectedKeysChange={onSelectedKeysChange} selectedKeys={selectedKeys} layers={keymap.layers}></KeymapComponent>
     }
 
     return <div>
