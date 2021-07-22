@@ -10,7 +10,12 @@ type LayerWithColumns = {
 }
 export const LayerComponent: React.FC<LayerWithColumns> = ({columns, name, bindings}: LayerWithColumns) => {
     
-    return <div>
+    return (
+    <div>
+      <div>
+        {name}
+      </div>
+      <div>
         {bindings.map(function(binding, index){
             console.log("Columns: "+columns)
             console.log("index: "+index)
@@ -23,5 +28,7 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({columns, name, bindi
             }
             return <BindingComponent style={style} key={name+"_binding_"+binding.index} index={binding.index} output={binding.output}></BindingComponent>;
         })}
-    </div>
+        </div>
+      </div>
+    )
 }

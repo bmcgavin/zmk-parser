@@ -4,6 +4,8 @@ import { sanitise } from '../../sanitiser';
 import { parse, Dtsi } from '../../devicetree'
 import { DtsiComponent } from '../Dtsi/DtsiComponent';
 
+import initialKeymap from '../../../test';
+
 type Props = {}
 export type State = {
   keymap: string;
@@ -12,7 +14,7 @@ export type State = {
 };
 
 export const initialState: State = {
-  keymap: "/ { keymap { compatible = \"zmk,keymap\"; default_layer { bindings = < &trans >; }; raise_layer { bindings = < &kp N2 &kp N3 &bt SEL 0 >; }; }; combos { compatible = \"zmk,combos\"; combo_f1 { slow-release; timeout-ms = <50>; key-positions = <13 25>; bindings = <&kp F1>; layers = <1>; }; combo_n1 { timeout-ms = <50>; key-positions = <13 25>; bindings = <&kp N1>; }; }; }; ",
+  keymap: initialKeymap,
   dtsi: undefined,
   parseError: undefined,
 }
@@ -22,11 +24,14 @@ export default class ParserApp extends React.Component<Props, State> {
     super(props);
 
     this.state = initialState
-    
+  }
+
+  componentDidMount() {
+    this.parseKeymap()
   }
 
   parseKeymap = (): void => {
-    // console.log("parseKeymap")
+    console.log("parseKeymap")
     this.setState((previousState: State) =>{
       const state = {
         ...previousState,

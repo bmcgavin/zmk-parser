@@ -1,4 +1,4 @@
 .binding {
-    border: 1px;
-
+    max-width: max-content;
+    display: inline-block;
 }
