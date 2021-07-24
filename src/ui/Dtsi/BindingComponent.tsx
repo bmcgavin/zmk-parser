@@ -13,6 +13,7 @@ type BindingWithStyle = {
 
 export const BindingComponent: React.FC<BindingWithStyle> = ({onSelectedKeysChange, selectedKeys, layer, style, index, output}: BindingWithStyle) => {
 
+    
     return <div className="binding" style={style}>{output}</div>
 }
 

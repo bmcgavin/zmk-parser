@@ -3,3 +3,9 @@
     display: inline-block;
     background-color: white;
 }
+
+.layer {
+    display:grid;
+    width:90%;
+    vertical-align: middle;
+}
