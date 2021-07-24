@@ -5,7 +5,7 @@ import { LayerKey } from '../Parser/Parser';
 import { LayerComponent } from './LayerComponent';
 
 export type Layout = {
-    columnsForRow: Map<number,number>,
+    columns: number[],
     rows: number
 }
 
@@ -18,14 +18,19 @@ type KeymapWithKeys = {
 export const KeymapComponent: React.FC<KeymapWithKeys> = ({onSelectedKeysChange, selectedKeys, layers}: KeymapWithKeys) => {
     
     const initialState: Layout = {
-        columnsForRow:new Map<number,number>([[0,12],[1,12],[2,12],[3,14],[4,8]]),
+        columns:[12,12,12,14,8],
         rows:5
     }
     const [state, setState] = useState(initialState)
 
+    const onChange = (event:React.ChangeEvent<HTMLInputElement>, row: number) => {
+        const newCol:number[] = state.columns.map((v: number, k: number): number => {if (k==row) {return Number(event.target.value)} return v})
+        setState({...state,columns:newCol})
+    }
+
     let columnInputs = []
     {for (let row = 0; row < state.rows;row++) {
-        columnInputs.push(<div>Columns for {row}:<input type="number" value={state.columnsForRow.get(row)} name="columnsFor{row}" onChange={(event) => {setState({...state,columnsForRow:state.columnsForRow.set(row, Number(event.target.value))})}}></input></div>)
+        columnInputs.push(<div key={"columnsFor"+row}>Columns for {row}:<input type="number" value={state.columns[row]} name="columnsFor{row}" onChange={(event) => onChange(event, row)}></input></div>)
     }}
 
     return <div>

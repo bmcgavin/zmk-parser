@@ -25,12 +25,7 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
       <div className="layer">
           {bindings.map(function(binding, index){
 
-              let style: CSSProperties = {}
-
-              //   gridRow: (Math.floor((index)/columns)+1)%(columns+1)
-                
-              // }
-              console.log(selectedKeys)
+              const style: CSSProperties = {}
               selectedKeys.map(function(selectedKey){
                   selectedKey.key.map(function(key){
                       if (key == index)
@@ -38,12 +33,17 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
                           style.backgroundColor = "red"
                   })
               })
-              let tempIndex = index
-              let row = 0
-              while (tempIndex > 0) {
-                layout.columnsForRow.forEach()
-              }
+              let colSum = 0
+              let row = 1
 
+              for (const column of layout.columns) {
+                colSum += column
+                if (index < colSum) {
+                    break
+                }
+                row++
+              }
+              style.gridRow = row
               return <BindingComponent onSelectedKeysChange={onSelectedKeysChange} selectedKeys={selectedKeys} style={style} layer={layer} key={name+"_binding_"+binding.index} index={binding.index} output={binding.output}></BindingComponent>;
           })}
         </div>
