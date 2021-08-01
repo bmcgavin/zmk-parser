@@ -13,7 +13,7 @@ type ComboProps = {
 
 export const ComboComponent: React.FC<ComboProps> = ({onSelectedKeysChange, bindingIndex, combo}: ComboProps) => {
 
-    const handleClick = useCallback(() => {
+    const handleComboClick = useCallback(() => {
         console.log(combo)
         const layerKey: LayerKey = {
             layer: combo.layers,
@@ -22,6 +22,12 @@ export const ComboComponent: React.FC<ComboProps> = ({onSelectedKeysChange, bind
         onSelectedKeysChange([layerKey])
     },
     [combo])
-    return <div onClick={handleClick}>{combo.bindings} ({combo.positions})</div>
+    const handleClearClick = useCallback(() => {
+        onSelectedKeysChange([])
+    }, [])
+
+
+    
+    return <div><button onClick={handleClearClick}>Clear</button><div onClick={handleComboClick}>{combo.bindings} ({combo.positions})</div><div></div></div>
 
 }

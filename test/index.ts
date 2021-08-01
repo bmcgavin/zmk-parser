@@ -12,41 +12,41 @@ function example(code: string) {
 
 
 
-console.log(JSON.stringify(parse(sanitise(`
-#include <behaviors.dtsi>
+// console.log(JSON.stringify(parse(sanitise(`
+// #include <behaviors.dtsi>
 
-#define LCAG(keycode) APPLY_MODS(MOD_LCTL, APPLY_MODS(MOD_LALT, APPLY_MODS(MOD_LGUI, keycode)))
+// #define LCAG(keycode) APPLY_MODS(MOD_LCTL, APPLY_MODS(MOD_LALT, APPLY_MODS(MOD_LGUI, keycode)))
 
-//todo :
-/ {
-    /**
-     * Let's talk about combos and nongreedy regex
-     */
-    combos {
-      compatible = \"zmk,combos\";
-      combo_f1 {
-        slow-release;
-        timeout-ms = <50>;
-        key-positions = <13 25>;
-        bindings = <&kp F1>;
-        layers = <1>;
-      };
-    };
-    /**
-     * Let's talk about keymaps for a while
-     */
-    keymap {
-      compatible = \"zmk,keymap\";
-      default_layer {
-        bindings = < &trans >;
-      };
-      raise_layer {
-        bindings = < &kp N2 &kp N3 &bt SEL 0 >;
-      };
-    };
-}; 
-`))
-, null, 2))
+// //todo :
+// / {
+//     /**
+//      * Let's talk about combos and nongreedy regex
+//      */
+//     combos {
+//       compatible = \"zmk,combos\";
+//       combo_f1 {
+//         slow-release;
+//         timeout-ms = <50>;
+//         key-positions = <13 25>;
+//         bindings = <&kp F1>;
+//         layers = <1>;
+//       };
+//     };
+//     /**
+//      * Let's talk about keymaps for a while
+//      */
+//     keymap {
+//       compatible = \"zmk,keymap\";
+//       default_layer {
+//         bindings = < &trans >;
+//       };
+//       raise_layer {
+//         bindings = < &kp N2 &kp N3 &bt SEL 0 >;
+//       };
+//     };
+// }; 
+// `))
+// , null, 2))
 
 
 const initialKeymap = `#include <behaviors.dtsi>

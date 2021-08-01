@@ -11,16 +11,7 @@ export type LayerKey = {
   key: number[]
 }
 
-const initialLayer : number[]= []
-const initialKey: number[] = []
-let initialLayerKey: LayerKey = {
-  layer: initialLayer,
-  key: initialKey
-}
-initialLayerKey.layer = initialLayer
-initialLayerKey.key = initialKey
-const initialLayerKeys: LayerKey[] = [initialLayerKey]
-
+const initialLayerKeys: LayerKey[] = []
 
 type Props = {}
 export type State = {
@@ -48,7 +39,7 @@ export default class ParserApp extends React.Component<Props, State> {
   handleSelectedKeysChange(selectedKeys: LayerKey[]) {
     this.setState({
       selectedKeys: selectedKeys
-    }, () => console.log(this.state))
+    }, () => console.log(selectedKeys))
   }
 
   componentDidMount() {
