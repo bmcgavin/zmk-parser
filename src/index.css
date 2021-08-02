@@ -2,6 +2,7 @@
     max-width: max-content;
     display: inline-block;
     background-color: white;
+    border: 1px solid;
 }
 
 .layer {

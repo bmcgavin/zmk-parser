@@ -5,29 +5,43 @@ import { LayerKey } from '../Parser/Parser';
 
 type ComboProps = {
     onSelectedKeysChange: any
+    layerCount: number
     bindingIndex: number
     combo: Combo
 }
 
 
 
-export const ComboComponent: React.FC<ComboProps> = ({onSelectedKeysChange, bindingIndex, combo}: ComboProps) => {
+export const ComboComponent: React.FC<ComboProps> = ({onSelectedKeysChange, layerCount, bindingIndex, combo}: ComboProps) => {
 
     const handleComboClick = useCallback(() => {
         console.log(combo)
-        const layerKey: LayerKey = {
-            layer: combo.layers,
-            key: combo.positions
+        let layerKeys = []
+        let layerLimit = layerCount
+        if (combo.layers.length != 0) {
+            layerLimit = combo.layers.length
         }
-        onSelectedKeysChange([layerKey])
+        for (let i = 0; i < layerLimit; i++) {
+            for (const pos of combo.positions) {
+                layerKeys.push({layer: i, key: pos})
+            }
+        }
+        onSelectedKeysChange(layerKeys)
     },
-    [combo])
+    [combo, layerCount])
     const handleClearClick = useCallback(() => {
         onSelectedKeysChange([])
     }, [])
 
+    const handleCreateClick = useCallback(() => {
+
+    }, [])
 
     
-    return <div><button onClick={handleClearClick}>Clear</button><div onClick={handleComboClick}>{combo.bindings} ({combo.positions})</div><div></div></div>
+    return <div>
+        <button onClick={handleClearClick}>Clear</button>
+        <button onClick={handleCreateClick}>Create</button>
+        <div onClick={handleComboClick}>{combo.bindings} ({combo.positions})</div>
+    </div>
 
 }

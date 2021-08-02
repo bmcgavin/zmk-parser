@@ -7,8 +7,8 @@ import { DtsiComponent } from '../Dtsi/DtsiComponent';
 import initialKeymap from '../../../test';
 
 export type LayerKey = {
-  layer: number[]
-  key: number[]
+  layer: number
+  key: number
 }
 
 const initialLayerKeys: LayerKey[] = []
