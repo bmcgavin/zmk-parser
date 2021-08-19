@@ -19,7 +19,7 @@ export const DtsiComponent: React.FC<DtsiWithHandler> = ({onSelectedKeysChange, 
     // console.log(combos)
     if (combos?.combos !== undefined) {
         let layerCount = keymap?.layers.length ? keymap.layers.length : 0
-        combosComponent = <CombosComponent onSelectedKeysChange={onSelectedKeysChange} layerCount={layerCount} combos={combos.combos}></CombosComponent>
+        combosComponent = <CombosComponent onSelectedKeysChange={onSelectedKeysChange} selectedKeys={selectedKeys} layerCount={layerCount} combos={combos.combos}></CombosComponent>
     }
     if (keymap !== undefined) {
         keymapComponent = <KeymapComponent onSelectedKeysChange={onSelectedKeysChange} selectedKeys={selectedKeys} layers={keymap.layers}></KeymapComponent>
