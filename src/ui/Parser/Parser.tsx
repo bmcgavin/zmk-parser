@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { sanitise } from '../../sanitiser';
 
 import { parse, Dtsi } from '../../devicetree'
@@ -15,6 +15,7 @@ const initialLayerKeys: LayerKey[] = []
 
 type Props = {}
 export type State = {
+  activeTab: string;
   keymap: string;
   dtsi: Dtsi | undefined;
   parseError: string | undefined;
@@ -22,6 +23,7 @@ export type State = {
 };
 
 export const initialState: State = {
+  activeTab: "parser",
   keymap: initialKeymap,
   dtsi: undefined,
   parseError: undefined,
@@ -77,9 +79,15 @@ export default class ParserApp extends React.Component<Props, State> {
       // console.log(this.state.keymap)
       this.parseKeymap()
     });
-    
-    
   };
+
+  setParserPage =(e: React.MouseEvent<HTMLLIElement>): void => {
+    this.setState({activeTab: "parser"})
+  }
+
+  setDtsiPage = (e: React.MouseEvent<HTMLLIElement>): void => {
+    this.setState({activeTab: "dtsi"})
+  }
 
   /*
 / { keymap { compatible = "zmk,keymap"; default_layer { bindings = < &trans >; }; raise_layer { bindings = < &kp N2 &kp N3 &bt SEL 0 >; }; }; combos { compatible = "zmk,combos"; combo_f1 { slow-release; timeout-ms = <50>; key-positions = <13 25>; bindings = <&kp F1>; layers = <1>; }; combo_n1 { timeout-ms = <50>; key-positions = <13 25>; bindings = <&kp N1>; }; }; }; 
@@ -90,20 +98,43 @@ export default class ParserApp extends React.Component<Props, State> {
     const parseError = this.state.parseError
 
     let dtsiComponent = <></>
-      if (dtsi !== undefined) {
-        dtsiComponent = <DtsiComponent onSelectedKeysChange={this.handleSelectedKeysChange} selectedKeys={this.state.selectedKeys} combos={dtsi.combos} keymap={dtsi.keymap}></DtsiComponent>
-      }
+    if (dtsi !== undefined) {
+      dtsiComponent = <div>DTSI: <DtsiComponent onSelectedKeysChange={this.handleSelectedKeysChange} selectedKeys={this.state.selectedKeys} combos={dtsi.combos} keymap={dtsi.keymap}></DtsiComponent></div>
+    }
+    let parseErrorComponent = <></>
+    if (parseError !== "") {
+      parseErrorComponent = (
+        <div>
+          parse error: {parseError}
+        </div>
+      )
+    }
+    let parserComponent = (
+      <Fragment>
+        {parseErrorComponent}
+        <label htmlFor="keymap">Paste your keymap here:</label>
+        <textarea id="keymap" name="keymap" onChange={this.onChange} value={this.state.keymap}></textarea>
+      </Fragment>
+    )
+    let page = parserComponent
+    if (this.state.activeTab == "dtsi") {
+      page = dtsiComponent
+    }
+
     return <div className="Parser">
       <header className="Parser-header">
         <h3>ZMK Parser</h3>
       </header>
-      <div>
-        DTSI: {dtsiComponent}
-      </div>
-      <textarea name="keymap" onChange={this.onChange} value={this.state.keymap}></textarea>
-      <div>
-        parseError: {parseError}
-      </div>
+      <ul className="tab-list">
+        <li className="tab" onClick={this.setParserPage}>
+          Parser
+        </li>
+        <li className="tab" onClick={this.setDtsiPage}>
+          DTSI
+        </li>
+      </ul>
+      {page}
+      
     </div>
   }
 }
