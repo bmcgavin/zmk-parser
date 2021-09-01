@@ -1,7 +1,7 @@
 import { map, regex, sequence, many, str, optional, count } from '../parser';
 import { Dtsi, Binding, Layer, Keymap, Combo, Combos } from './types';
 
-const bindingIdent = regex(/\&[^\&>]+/g, "binding")
+const bindingIdent = regex(/\s*\&[^\&>]+/g, "binding")
 const dtsiMarker = regex(/\/\s+\{\s*/g, "/ {");
 const keymapMarker = regex(/\s*keymap\s*/g, "keymap");
 const compatibleMarker = regex(/\s*compatible = \"zmk,[^\"]+\";\s*/g, "compatible = \"zmk,<smth>\"")

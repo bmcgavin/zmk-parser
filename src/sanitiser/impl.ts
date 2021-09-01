@@ -16,7 +16,7 @@ const removeNewlines: ArraySanitiser = (code: string[]) =>
   code.filter(line => line.length != 0)
 
 const removeMultilineComments: StringSanitiser = (lines: string) =>
-  lines.replace(/\/\*.*?\*\//g, "")
+  lines.replace(/\/\*[^\/]*\*\/\s+/g, "")
 
 export function sanitise(code: string): string {
   const starter: InverseTransformingSanitiser = (code: string) => code.split(/\n/)
