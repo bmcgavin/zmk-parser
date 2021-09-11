@@ -18,14 +18,20 @@ type LayerWithColumns = {
 }
 export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange, selectedKeys, layerCount, layer, layout, name, bindings}: LayerWithColumns) => {
     
+
+  console.log("layout")
+  console.log(layout)
     return (
     <div>
       <div>
         {name}
       </div>
       <div className="layer">
+        
           {bindings.map(function(binding, index){
 
+              console.log("index")
+              console.log(index)
               const style: CSSProperties = {}
               selectedKeys.map(function(selectedKey){
                       if (selectedKey.key == index && selectedKey.layer == layer)
@@ -33,15 +39,19 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
                   
               })
               let colSum = 0
+              let column = index + 1
               let row = 1
 
-              for (const column of layout.columns) {
-                colSum += column
+              for (const currentColumn of layout.columns) {
+                colSum += currentColumn
                 if (index < colSum) {
                     break
                 }
+                column -= currentColumn
                 row++
               }
+              
+              style.gridColumn = column
               style.gridRow = row
               return <BindingComponent onSelectedKeysChange={onSelectedKeysChange} selectedKeys={selectedKeys} style={style} layer={layer} key={name+"_binding_"+binding.index} index={binding.index} output={binding.output}></BindingComponent>;
           })}
