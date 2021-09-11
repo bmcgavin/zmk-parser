@@ -49,7 +49,13 @@ function example(code: string) {
 // , null, 2))
 
 
-const initialKeymap = `#include <behaviors.dtsi>
+const initialKeymap = `/*
+* Copyright (c) 2020 The ZMK Contributors
+*
+* SPDX-License-Identifier: MIT
+*/
+
+#include <behaviors.dtsi>
 
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
@@ -78,10 +84,10 @@ const initialKeymap = `#include <behaviors.dtsi>
 // | SHIFT        |  Z  |  X  |  C   |  V   |  B   |   "["  |  |  "]"  |  N   |  M    |  ,    |  .   |   /   | SHIFT |
 //                            | ALT  | GUI  | LWR  | SPACE  |  | ENTER | RAISE| BSPC  | CTL   |
       bindings = <
-&kp     GRAV     &kp N1    &kp N2    &kp N3    &kp N4    &kp N5                       &kp N6    &kp N7    &kp N8    &kp N9    &kp N0    &kp MINUS
-&kp     TAB      &kp Q     &kp W     &kp E     &kp R     &kp T                        &kp Y     &kp U     &kp I     &kp O     &kp P     &kp BSLH
-&mt LCTL ESC     &kp A     &kp S     &kp D     &kp F     &kp G                        &kp H     &kp J     &kp K     &kp L     &kp SCLN  &kp QUOT
-&kp     LSFT     &kp Z     &kp X     &kp C     &kp V     &kp B   &kp LBKT  &kp RBKT   &kp N     &kp M     &kp CMMA  &kp DOT   &kp FSLH  &kp RSFT
+  &kp     GRAV     &kp N1    &kp N2    &kp N3    &kp N4    &kp N5                       &kp N6    &kp N7    &kp N8    &kp N9    &kp N0    &kp MINUS
+  &kp     TAB      &kp Q     &kp W     &kp E     &kp R     &kp T                        &kp Y     &kp U     &kp I     &kp O     &kp P     &kp BSLH
+  &mt LCTL ESC     &kp A     &kp S     &kp D     &kp F     &kp G                        &kp H     &kp J     &kp K     &kp L     &kp SCLN  &kp QUOT
+  &kp     LSFT     &kp Z     &kp X     &kp C     &kp V     &kp B   &kp LBKT  &kp RBKT   &kp N     &kp M     &kp CMMA  &kp DOT   &kp FSLH  &kp RSFT
                                       &kp LALT  &kp LGUI  &mo 1   &kp SPC   &kp RET    &mo 2     &kp BKSP  &kp RCTL
       >;
     };

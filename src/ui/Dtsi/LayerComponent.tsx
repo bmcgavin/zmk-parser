@@ -30,14 +30,15 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
     if (w == column) {
       padded.push(...row)
     } else if (index == layout.columns.length-1) {
+      console.log("LAST")
       let totalPad = w - column
-      let sidePad = totalPad / 2
+      let sidePad = Math.ceil(totalPad / 2)
       padded.push(...Array<Binding>(sidePad).fill(empty))
       padded.push(...row)
       padded.push(...Array<Binding>(sidePad).fill(empty))
     } else {
       let totalPad = w - column
-      let sideRow = column / 2
+      let sideRow = Math.ceil(column / 2)
       padded.push(...row.splice(0, sideRow))
       padded.push(...Array<Binding>(totalPad).fill(empty))
       padded.push(...row)

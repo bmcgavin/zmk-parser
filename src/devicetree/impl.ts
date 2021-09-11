@@ -5,7 +5,7 @@ const bindingIdent = regex(/\s*\&[^\&>]+/g, "binding")
 const dtsiMarker = regex(/\/\s+\{\s*/g, "/ {");
 const keymapMarker = regex(/\s*keymap\s*/g, "keymap");
 const compatibleMarker = regex(/\s*compatible = \"zmk,[^\"]+\";\s*/g, "compatible = \"zmk,<smth>\"")
-const layerIdent = regex(/[a-zA-Z][a-zA-Z0-9]*_layer/g, "layer");
+const layerIdent = regex(/[a-zA-Z][a-zA-Z0-9_]*_layer/g, "layer");
 const comboIdent = regex(/[a-zA-Z][a-zA-Z0-9_]*/g, "combo");
 const brace = regex(/\s*[\{\}];?\s*/g, "brace");
 const angleBracket = regex(/\s*[\<\>];?\s*/g, "angle bracket");
