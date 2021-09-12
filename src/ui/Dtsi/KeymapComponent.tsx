@@ -18,8 +18,10 @@ type KeymapWithKeys = {
 export const KeymapComponent: React.FC<KeymapWithKeys> = ({onSelectedKeysChange, selectedKeys, layers}: KeymapWithKeys) => {
     
     const initialState: Layout = {
+        // columns:[10,10,10, 4],
+        // rows:4
         columns:[12,12,12,14,8],
-        rows:5
+        rows: 5
     }
     const [state, setState] = useState(initialState)
 
@@ -37,6 +39,7 @@ export const KeymapComponent: React.FC<KeymapWithKeys> = ({onSelectedKeysChange,
         <div>Keymap</div>
         <div>Rows:<input type="number" name="rows" value={state.rows} onChange={(event) => {setState({...state,rows:Number(event.target.value)})}}></input></div>
         {columnInputs}
+
         {layers.map(function(layer, index){
             return <LayerComponent onSelectedKeysChange={onSelectedKeysChange} layerCount={layers.length} layer={index} selectedKeys={selectedKeys} layout={state} key={layer.name+"_"+index} name={layer.name} bindings={layer.bindings}></LayerComponent>;
         })}

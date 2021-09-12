@@ -4,7 +4,7 @@ import { sanitise } from '../../sanitiser';
 import { parse, Dtsi } from '../../devicetree'
 import { DtsiComponent } from '../Dtsi/DtsiComponent';
 
-import initialKeymap from '../../../test';
+import { initialLily58Keymap, initialFerrisKeymap} from '../../../test';
 
 export type LayerKey = {
   layer: number
@@ -24,7 +24,8 @@ export type State = {
 
 export const initialState: State = {
   activeTab: "parser",
-  keymap: initialKeymap,
+  // keymap: initialFerrisKeymap,
+  keymap: initialLily58Keymap,
   dtsi: undefined,
   parseError: undefined,
   selectedKeys: initialLayerKeys

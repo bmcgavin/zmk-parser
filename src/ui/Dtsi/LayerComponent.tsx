@@ -19,6 +19,7 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
   const widest = (layout: Layout): number => Math.max(...layout.columns)
 
   let w = widest(layout)
+  
   let padded: Binding[] = []
   let empty: Binding = {
     index: -1,
@@ -29,8 +30,7 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
     let row = copy.splice(0, column)
     if (w == column) {
       padded.push(...row)
-    } else if (index == layout.columns.length-1) {
-      console.log("LAST")
+    } else if (index == layout.rows-1) {
       let totalPad = w - column
       let sidePad = Math.ceil(totalPad / 2)
       padded.push(...Array<Binding>(sidePad).fill(empty))
@@ -44,6 +44,8 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
       padded.push(...row)
     }
   })
+
+  console.log(padded)
 
   return (
   <div>
@@ -79,6 +81,9 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
             style.gridColumn = column
             style.gridRow = row
 
+            // console.log("binding")
+            // console.log(binding)
+            // console.log(style)
             if (binding.index == -1) {
               return <div style={style} key={"padding_"+index}></div>
             }

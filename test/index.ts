@@ -48,8 +48,118 @@ function example(code: string) {
 // `))
 // , null, 2))
 
+const initialFerrisKeymap = `/*
+* Copyright (c) 2020 The ZMK Contributors
+*
+* SPDX-License-Identifier: MIT
+*/
 
-const initialKeymap = `/*
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+
+#define NAV_L 1
+#define OTHER_L 2
+#define NUM_L 3
+#define L_SYM_L 4
+#define R_SYM_L 5
+#define EXTRA_L 6
+
+// Using layer taps on thumbs, having quick tap as well helps w/ repeating space/backspace
+&lt { quick_tap_ms = <200>; };
+&mt { 
+   quick_tap_ms = <200>; 
+   and_another = <fds fds>;
+};
+
+
+/ {
+   behaviors {
+       hm: homerow_mods {
+           compatible = "zmk,behavior-hold-tap";
+           label = "homerow mods";
+           #binding-cells = <2>;
+           tapping_term_ms = <200>;
+           flavor = "tap-preferred";
+           bindings = <&kp>, <&kp>;
+       };
+   };
+
+   keymap {
+       compatible = "zmk,keymap";
+
+       default_layer {
+           bindings = <
+               &kp Q       &kp D       &kp R       &kp W           &kp B         &kp J             &kp F          &kp U          &kp P        &kp COLON
+               &hm LSHFT A &kp S       &kp H       &lt R_SYM_L T   &kp G         &kp Y             &lt L_SYM_L N  &lt NAV_L E    &lt NUM_L O  &hm LSHFT I
+               &kp Z       &hm LCTRL X &hm LALT M  &kp C           &kp V         &kp K             &kp L          &hm LALT COMMA &hm LCTL DOT &kp FSLH
+                                                   &kp LC(LA(UP))  &kp BKSP      &lt EXTRA_L SPACE &kp LC(LA(DOWN))
+           >;
+       };
+
+       nav_layer {
+           bindings = <
+               &trans     &trans     &kp PG_UP     &trans          &trans       &trans            &trans         &trans       &trans       &trans
+               &kp LEFT   &kp UP     &kp DOWN      &kp RIGHT       &trans       &trans            &kp LGUI       &none        &kp LC(LALT) &kp LC(LA(LSHFT))
+               &trans     &kp HOME   &kp PG_DN     &kp END         &trans       &trans            &trans         &trans       &trans       &trans
+                                                   &kp LG(LEFT)    &trans       &trans            &kp LG(RIGHT)
+           >;
+       };
+
+       other_layer {
+           bindings = <
+               &trans     &trans     &trans        &trans          &trans       &trans            &trans         &trans      &trans     &trans
+               &trans     &trans     &trans        &trans          &trans       &trans            &trans         &trans      &trans     &trans
+               &trans     &trans     &trans        &trans          &trans       &trans            &kp HOME       &trans      &trans     &trans
+                                                   &trans          &trans       &trans            &trans
+           >;
+       };
+
+       num_layer {
+           bindings = <
+               &kp PLUS   &kp N7     &kp N8        &kp N9          &kp PLUS      &trans           &trans         &trans      &trans     &trans
+               &kp N0     &kp N1     &kp N2        &kp N3          &kp MINUS     &trans           &trans         &trans      &none      &trans
+               &kp GRAVE  &kp N4     &kp N5        &kp N6          &kp EQL       &trans           &trans         &trans      &trans     &trans
+                                                   &trans          &trans        &trans           &trans
+           >;
+       };
+
+       left_sym_layer {
+           bindings = <
+               &trans     &kp COLON   &kp LT       &kp GT          &kp SEMI       &trans          &trans         &trans      &trans     &trans
+               &kp LBRC   &kp RBRC    &kp LPAR     &kp RPAR        &kp PLUS       &trans          &none          &kp EQUAL   &kp PLUS   &kp PERCENT
+               &trans     &kp EXCL    &kp LBKT     &kp RBKT        &kp LS(BSLH)   &trans          &trans         &trans      &trans     &trans
+                                                   &kp C_VOL_DN    &trans       &trans            &kp C_VOL_UP
+           >;
+       };
+
+       right_sym_layer {
+           bindings = <
+       &trans     &trans     &trans        &trans          &trans       &trans            &kp UNDER      &kp PIPE    &kp SQT    &trans
+               &kp CARET  &kp STAR   &kp AMPS      &none           &trans       &kp HASH          &kp TILDE      &kp FSLH    &kp DQT    &kp DOLLAR
+               &trans     &trans     &trans        &trans          &trans       &trans            &kp MINUS      &kp BSLH    &kp GRAVE  &trans
+                                                   &kp C_BRI_DN    &trans       &trans            &kp C_BRI_UP
+           >;
+       };
+
+       extra_layer {
+           bindings = <
+               &trans     &kp ESC      &kp COLON   &trans          &trans       &trans            &trans         &trans      &trans     &kp DEL
+               &trans     &kp PERCENT  &kp FSLH    &kp RET         &kp EXCL     &trans            &kp LGUI       &trans      &trans     &trans
+               &trans     &trans       &trans      &trans          &trans       &trans            &trans         &trans      &trans     &trans
+                                                   &trans          &trans       &none             &trans
+           >;
+       };
+
+   };
+};
+
+
+
+`
+
+
+const initialLily58Keymap = `/*
 * Copyright (c) 2020 The ZMK Contributors
 *
 * SPDX-License-Identifier: MIT
@@ -149,4 +259,4 @@ const initialKeymap = `/*
     };
 };
 `
-export default initialKeymap;
+export {initialLily58Keymap, initialFerrisKeymap};
