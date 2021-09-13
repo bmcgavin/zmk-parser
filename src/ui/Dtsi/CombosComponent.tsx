@@ -29,7 +29,7 @@ export const CombosComponent: React.FC<CombosWithHandler> = ({onSelectedKeysChan
     }
     
         return <div>
-        <span>Combos</span>
+        <span>Combos</span><br/>
         <textarea id="combos" value={output(selectedKeys)}></textarea>
         {combos.map(function(combo, index){
             return <ComboComponent onSelectedKeysChange={onSelectedKeysChange} layerCount={layerCount} key={combo.name} bindingIndex={index} combo={combo}></ComboComponent>;

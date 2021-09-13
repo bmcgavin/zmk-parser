@@ -24,6 +24,7 @@ export const LayersComponent: React.FC<Layers> = ({onSelectedKeysChange, selecte
 
     return (
         <div>
+        <div>Layers</div>
         <ul className="vertical-tab-list">
         {layers.map((layer) => {
             let className = "vertical-tab"

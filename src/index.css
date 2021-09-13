@@ -1,3 +1,7 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 .binding {
     max-width: max-content;
     display: inline-block;
@@ -20,6 +24,7 @@
 #keymap {
     width: 80%;
     height: 15em;
+    font-family: 'Courier New', Courier, monospace;
 }
 #combos {
     height: 150px;
@@ -45,7 +50,8 @@
     float: left;
     list-style: none;
     display: table;
-    padding: 0;
+    padding: 0px 10px 0px 0px;
+    margin: 0;
 }
 
 .vertical-tab {
@@ -58,4 +64,9 @@
 
 .activeLayer {
     background-color: violet;
+}
+
+.parseError {
+    background-color: whitesmoke;
+    font-family: 'Courier New', Courier, monospace;
 }

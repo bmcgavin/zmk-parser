@@ -100,19 +100,19 @@ export default class ParserApp extends React.Component<Props, State> {
 
     let dtsiComponent = <></>
     if (dtsi !== undefined) {
-      dtsiComponent = <div>DTSI: <DtsiComponent onSelectedKeysChange={this.handleSelectedKeysChange} selectedKeys={this.state.selectedKeys} combos={dtsi.combos} keymap={dtsi.keymap}></DtsiComponent></div>
+      dtsiComponent = <DtsiComponent onSelectedKeysChange={this.handleSelectedKeysChange} selectedKeys={this.state.selectedKeys} combos={dtsi.combos} keymap={dtsi.keymap}></DtsiComponent>
     }
     let parseErrorComponent = <></>
     if (parseError !== "") {
       parseErrorComponent = (
-        <div>
-          parse error: {parseError}
+        <div className="parseError">
+          {parseError}
         </div>
       )
     }
     let parserComponent = (
       <Fragment>
-        <label htmlFor="keymap">Paste your keymap here:</label>
+        <label htmlFor="keymap">Paste your keymap here:</label><br/>
         <textarea id="keymap" name="keymap" onChange={this.onChange} value={this.state.keymap}></textarea>
         {parseErrorComponent}
       </Fragment>

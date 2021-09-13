@@ -49,9 +49,6 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
 
   return (
   <div>
-    <div>
-      {name}
-    </div>
     <div className="layer">
       
         {padded.map(function(binding, index){

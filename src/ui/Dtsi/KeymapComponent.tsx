@@ -40,7 +40,7 @@ export const KeymapComponent: React.FC<KeymapWithKeys> = ({onSelectedKeysChange,
         <div>Rows:<input type="number" name="rows" value={state.rows} onChange={(event) => {setState({...state,rows:Number(event.target.value)})}}></input></div>
         {columnInputs}
 
-        return <LayersComponent onSelectedKeysChange={onSelectedKeysChange} selectedKeys={selectedKeys} layers={layers} layout={state}></LayersComponent>;
+        <LayersComponent onSelectedKeysChange={onSelectedKeysChange} selectedKeys={selectedKeys} layers={layers} layout={state}></LayersComponent>;
         
     </div>
 }
