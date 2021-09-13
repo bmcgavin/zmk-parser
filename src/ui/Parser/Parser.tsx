@@ -112,9 +112,9 @@ export default class ParserApp extends React.Component<Props, State> {
     }
     let parserComponent = (
       <Fragment>
-        {parseErrorComponent}
         <label htmlFor="keymap">Paste your keymap here:</label>
         <textarea id="keymap" name="keymap" onChange={this.onChange} value={this.state.keymap}></textarea>
+        {parseErrorComponent}
       </Fragment>
     )
     let page = parserComponent

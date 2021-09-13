@@ -40,3 +40,22 @@
     padding: 10px 15px 10px 15px;
     border: 1px solid;
 }
+
+.vertical-tab-list {
+    float: left;
+    list-style: none;
+    display: table;
+    padding: 0;
+}
+
+.vertical-tab {
+    position: relative;
+    display: block;
+    content: " ";
+    padding: 10px 15px 10px 15px;
+    border: 1px solid;
+}
+
+.activeLayer {
+    background-color: violet;
+}

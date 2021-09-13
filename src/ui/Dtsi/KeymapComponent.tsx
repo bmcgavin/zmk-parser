@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Keymap, Layer } from 'src/devicetree/types';
 import { LayerKey } from '../Parser/Parser';
 
-import { LayerComponent } from './LayerComponent';
+import { LayersComponent } from './LayersComponent';
 
 export type Layout = {
     columns: number[],
@@ -40,9 +40,8 @@ export const KeymapComponent: React.FC<KeymapWithKeys> = ({onSelectedKeysChange,
         <div>Rows:<input type="number" name="rows" value={state.rows} onChange={(event) => {setState({...state,rows:Number(event.target.value)})}}></input></div>
         {columnInputs}
 
-        {layers.map(function(layer, index){
-            return <LayerComponent onSelectedKeysChange={onSelectedKeysChange} layerCount={layers.length} layer={index} selectedKeys={selectedKeys} layout={state} key={layer.name+"_"+index} name={layer.name} bindings={layer.bindings}></LayerComponent>;
-        })}
+        return <LayersComponent onSelectedKeysChange={onSelectedKeysChange} selectedKeys={selectedKeys} layers={layers} layout={state}></LayersComponent>;
+        
     </div>
 }
 
