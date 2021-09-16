@@ -5,6 +5,7 @@ import { parse, Dtsi } from '../../devicetree'
 import { DtsiComponent } from '../Dtsi/DtsiComponent';
 
 import { initialLily58Keymap, initialFerrisKeymap} from '../../../test';
+import { Binding, Layer } from 'src/devicetree/types';
 
 export type LayerKey = {
   layer: number
@@ -37,6 +38,37 @@ export default class ParserApp extends React.Component<Props, State> {
 
     this.state = initialState
     this.handleSelectedKeysChange = this.handleSelectedKeysChange.bind(this)
+    this.handleOutputChange = this.handleOutputChange.bind(this)
+  }
+
+  handleOutputChange(binding: Binding, layer: number) {
+    console.log("handleOutputChange")
+    console.log(binding)
+    if (this.state.dtsi?.keymap?.layers[layer] === undefined) {
+      return
+    }
+    let bindings = this.state.dtsi.keymap.layers[layer].bindings
+    const index = bindings.findIndex((b: Binding) => b.index === binding.index)
+    if (index === -1) {
+      return
+    }
+    bindings = [...bindings.slice(0, index), binding, ...bindings.slice(index + 1)]
+    let layers = this.state.dtsi.keymap.layers
+    const newLayer: Layer = {
+      name: layers[layer].name,
+      bindings: bindings
+    }
+    layers = [...layers.slice(0, layer), newLayer, ...layers.slice(layer + 1)]
+    const keymap = {
+      ...this.state.dtsi.keymap,
+      layers: layers
+    }
+    const dtsi = {
+      ...this.state.dtsi,
+      keymap: keymap 
+    }
+    
+    this.setState({dtsi})
   }
 
   handleSelectedKeysChange(selectedKeys: LayerKey[]) {
@@ -100,7 +132,7 @@ export default class ParserApp extends React.Component<Props, State> {
 
     let dtsiComponent = <></>
     if (dtsi !== undefined) {
-      dtsiComponent = <DtsiComponent onSelectedKeysChange={this.handleSelectedKeysChange} selectedKeys={this.state.selectedKeys} combos={dtsi.combos} keymap={dtsi.keymap}></DtsiComponent>
+      dtsiComponent = <DtsiComponent onSelectedKeysChange={this.handleSelectedKeysChange} onOutputChange={this.handleOutputChange} selectedKeys={this.state.selectedKeys} combos={dtsi.combos} keymap={dtsi.keymap}></DtsiComponent>
     }
     let parseErrorComponent = <></>
     if (parseError !== "") {

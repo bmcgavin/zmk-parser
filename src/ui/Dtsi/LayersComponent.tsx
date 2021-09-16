@@ -7,11 +7,12 @@ import { Layout } from './KeymapComponent';
 
 type Layers = {
     onSelectedKeysChange:any,
+    onOutputChange: any,
     selectedKeys: LayerKey[],
     layers: Layer[],
     layout: Layout,
 }
-export const LayersComponent: React.FC<Layers> = ({onSelectedKeysChange, selectedKeys, layers, layout}: Layers) => {
+export const LayersComponent: React.FC<Layers> = ({onSelectedKeysChange, onOutputChange, selectedKeys, layers, layout}: Layers) => {
     
     const initialState = {
         activeLayer: layers[0].name
@@ -31,12 +32,12 @@ export const LayersComponent: React.FC<Layers> = ({onSelectedKeysChange, selecte
             if (layer.name == state.activeLayer) {
                 className += " activeLayer"
             }
-            return <li className={className} onClick={() => setLayer(layer.name)}>{layer.name}</li>
+            return <li key={layer.name} className={className} onClick={() => setLayer(layer.name)}>{layer.name}</li>
         })}
         </ul>
         {layers.map(function(layer, index){
             if (layer.name == state.activeLayer) {
-                return <LayerComponent onSelectedKeysChange={onSelectedKeysChange} layerCount={layers.length} layer={index} selectedKeys={selectedKeys} layout={layout} key={layer.name+"_"+index} name={layer.name} bindings={layer.bindings}></LayerComponent>;
+                return <LayerComponent onSelectedKeysChange={onSelectedKeysChange} onOutputChange={onOutputChange} layerCount={layers.length} layer={index} selectedKeys={selectedKeys} layout={layout} key={layer.name+"_"+index} name={layer.name} bindings={layer.bindings}></LayerComponent>;
             }
         })}
     </div>

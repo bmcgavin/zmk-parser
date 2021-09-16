@@ -11,11 +11,12 @@ export type Layout = {
 
 type KeymapWithKeys = {
     onSelectedKeysChange: any,
+    onOutputChange: any,
     selectedKeys: LayerKey[],
     layers: Layer[]
 }
 
-export const KeymapComponent: React.FC<KeymapWithKeys> = ({onSelectedKeysChange, selectedKeys, layers}: KeymapWithKeys) => {
+export const KeymapComponent: React.FC<KeymapWithKeys> = ({onSelectedKeysChange, onOutputChange, selectedKeys, layers}: KeymapWithKeys) => {
     
     const initialState: Layout = {
         // columns:[10,10,10, 4],
@@ -40,7 +41,7 @@ export const KeymapComponent: React.FC<KeymapWithKeys> = ({onSelectedKeysChange,
         <div>Rows:<input type="number" name="rows" value={state.rows} onChange={(event) => {setState({...state,rows:Number(event.target.value)})}}></input></div>
         {columnInputs}
 
-        <LayersComponent onSelectedKeysChange={onSelectedKeysChange} selectedKeys={selectedKeys} layers={layers} layout={state}></LayersComponent>;
+        <LayersComponent onSelectedKeysChange={onSelectedKeysChange} onOutputChange={onOutputChange} selectedKeys={selectedKeys} layers={layers} layout={state}></LayersComponent>;
         
     </div>
 }

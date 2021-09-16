@@ -7,6 +7,7 @@ import { Layout } from './KeymapComponent';
 
 type LayerWithColumns = {
     onSelectedKeysChange:any,
+    onOutputChange: any,
     selectedKeys: LayerKey[],
     layerCount: number,
     layer: number,
@@ -14,8 +15,9 @@ type LayerWithColumns = {
     name: string,
     bindings: Binding[]
 }
-export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange, selectedKeys, layerCount, layer, layout, name, bindings}: LayerWithColumns) => {
-    
+export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange, onOutputChange, selectedKeys, layerCount, layer, layout, name, bindings}: LayerWithColumns) => {
+  
+
   const widest = (layout: Layout): number => Math.max(...layout.columns)
 
   let w = widest(layout)
@@ -44,8 +46,6 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
       padded.push(...row)
     }
   })
-
-  console.log(padded)
 
   return (
   <div>
@@ -86,7 +86,7 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
             }
 
             // console.log("returning BindingComponent")
-            return <BindingComponent onSelectedKeysChange={onSelectedKeysChange} selectedKeys={selectedKeys} style={style} layer={layer} key={name+"_binding_"+index} index={binding.index} output={binding.output}></BindingComponent>;
+            return <BindingComponent onSelectedKeysChange={onSelectedKeysChange} onOutputChange={onOutputChange} selectedKeys={selectedKeys} style={style} layer={layer} key={name+"_binding_"+index} index={binding.index} output={binding.output}></BindingComponent>;
         })}
       </div>
     </div>

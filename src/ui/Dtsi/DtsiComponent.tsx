@@ -7,12 +7,13 @@ import { KeymapComponent } from './KeymapComponent';
 
 type DtsiWithHandler = {
     onSelectedKeysChange: any,
+    onOutputChange: any,
     selectedKeys: LayerKey[],
     keymap: Keymap | undefined,
     combos: Combos | undefined
 }
 
-export const DtsiComponent: React.FC<DtsiWithHandler> = ({onSelectedKeysChange, selectedKeys, keymap, combos}: DtsiWithHandler) => {
+export const DtsiComponent: React.FC<DtsiWithHandler> = ({onSelectedKeysChange, onOutputChange, selectedKeys, keymap, combos}: DtsiWithHandler) => {
     let combosComponent, keymapComponent = <></>
 
     // console.log(keymap)
@@ -22,7 +23,7 @@ export const DtsiComponent: React.FC<DtsiWithHandler> = ({onSelectedKeysChange, 
         combosComponent = <CombosComponent onSelectedKeysChange={onSelectedKeysChange} selectedKeys={selectedKeys} layerCount={layerCount} combos={combos.combos}></CombosComponent>
     }
     if (keymap !== undefined) {
-        keymapComponent = <KeymapComponent onSelectedKeysChange={onSelectedKeysChange} selectedKeys={selectedKeys} layers={keymap.layers}></KeymapComponent>
+        keymapComponent = <KeymapComponent onSelectedKeysChange={onSelectedKeysChange} onOutputChange={onOutputChange} selectedKeys={selectedKeys} layers={keymap.layers}></KeymapComponent>
     }
 
     return <div>
