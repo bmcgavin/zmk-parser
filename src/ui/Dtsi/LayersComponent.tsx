@@ -23,6 +23,11 @@ export const LayersComponent: React.FC<Layers> = ({onSelectedKeysChange, onOutpu
         setState({activeLayer: name})
     }
 
+    const copyLayer = () => {
+
+        document.execCommand('copy')
+    }
+
     return (
         <div>
         <div>Layers</div>
@@ -31,8 +36,9 @@ export const LayersComponent: React.FC<Layers> = ({onSelectedKeysChange, onOutpu
             let className = "vertical-tab"
             if (layer.name == state.activeLayer) {
                 className += " activeLayer"
+
             }
-            return <li key={layer.name} className={className} onClick={() => setLayer(layer.name)}>{layer.name}</li>
+            return <li key={layer.name} className={className} onClick={() => setLayer(layer.name)}>{layer.name} <a onClick={copyLayer}>Copy</a></li>
         })}
         </ul>
         {layers.map(function(layer, index){

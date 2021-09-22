@@ -2,10 +2,11 @@ import React, { Fragment } from 'react';
 import { sanitise } from '../../sanitiser';
 
 import { parse, Dtsi } from '../../devicetree'
-import { DtsiComponent } from '../Dtsi/DtsiComponent';
 
 import { initialLily58Keymap, initialFerrisKeymap} from '../../../test';
 import { Binding, Layer } from 'src/devicetree/types';
+import { CombosComponent } from '../Dtsi/CombosComponent';
+import { KeymapComponent } from '../Dtsi/KeymapComponent';
 
 export type LayerKey = {
   layer: number
@@ -114,12 +115,8 @@ export default class ParserApp extends React.Component<Props, State> {
     });
   };
 
-  setParserPage =(e: React.MouseEvent<HTMLLIElement>): void => {
-    this.setState({activeTab: "parser"})
-  }
-
-  setDtsiPage = (e: React.MouseEvent<HTMLLIElement>): void => {
-    this.setState({activeTab: "dtsi"})
+  setPage =(name: string): void => {
+    this.setState({activeTab: name})
   }
 
   /*
@@ -130,9 +127,13 @@ export default class ParserApp extends React.Component<Props, State> {
     const dtsi = this.state.dtsi
     const parseError = this.state.parseError
 
-    let dtsiComponent = <></>
-    if (dtsi !== undefined) {
-      dtsiComponent = <DtsiComponent onSelectedKeysChange={this.handleSelectedKeysChange} onOutputChange={this.handleOutputChange} selectedKeys={this.state.selectedKeys} combos={dtsi.combos} keymap={dtsi.keymap}></DtsiComponent>
+    let keymapComponent = <></>
+    if (dtsi !== undefined && dtsi.keymap !== undefined) {
+      keymapComponent = <KeymapComponent onSelectedKeysChange={this.handleSelectedKeysChange} onOutputChange={this.handleOutputChange} selectedKeys={this.state.selectedKeys} layers={dtsi.keymap.layers}></KeymapComponent>
+    }
+    let combosComponent = <></>
+    if (dtsi !== undefined && dtsi.keymap !== undefined && dtsi.combos !== undefined) {
+      combosComponent = <CombosComponent onSelectedKeysChange={this.handleSelectedKeysChange} selectedKeys={this.state.selectedKeys} layerCount={dtsi.keymap.layers.length} combos={dtsi.combos.combos}></CombosComponent>
     }
     let parseErrorComponent = <></>
     if (parseError !== "") {
@@ -150,8 +151,13 @@ export default class ParserApp extends React.Component<Props, State> {
       </Fragment>
     )
     let page = parserComponent
-    if (this.state.activeTab == "dtsi") {
-      page = dtsiComponent
+    switch (this.state.activeTab) {
+      case "keymap":
+        page = keymapComponent
+        break
+      case "combos":
+        page = combosComponent
+        break
     }
 
     return <div className="Parser">
@@ -159,11 +165,14 @@ export default class ParserApp extends React.Component<Props, State> {
         <h3>ZMK Parser</h3>
       </header>
       <ul className="tab-list">
-        <li className="tab" onClick={this.setParserPage}>
+        <li className="tab" onClick={() => this.setPage("parser")}>
           Parser
         </li>
-        <li className="tab" onClick={this.setDtsiPage}>
-          DTSI
+        <li className="tab" onClick={() => this.setPage("keymap")}>
+          Keymap
+        </li>
+        <li className="tab" onClick={() => this.setPage("combos")}>
+          Combos
         </li>
       </ul>
       {page}
