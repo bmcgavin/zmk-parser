@@ -9,14 +9,26 @@ type LayerWithColumns = {
     onSelectedKeysChange:any,
     onOutputChange: any,
     selectedKeys: LayerKey[],
-    layerCount: number,
     layer: number,
     layout: Layout,
     name: string,
     bindings: Binding[]
 }
-export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange, onOutputChange, selectedKeys, layerCount, layer, layout, name, bindings}: LayerWithColumns) => {
+export const LayerComponent: React.FC<LayerWithColumns> = ({
+  onSelectedKeysChange, 
+  onOutputChange, 
+  selectedKeys,
+  layer,
+  layout,
+  name,
+  bindings
+}: LayerWithColumns) => {
   
+  const outputRaw = (keymap: String[][]): String => {
+    return keymap.map((row) => {
+      return "  "+row.join("\t")
+    }).join("\n")
+  }
 
   const widest = (layout: Layout): number => Math.max(...layout.columns)
 
@@ -46,6 +58,8 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
       padded.push(...row)
     }
   })
+
+  let raw: String[][] = []
 
   return (
   <div>
@@ -84,11 +98,27 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
             if (binding.index == -1) {
               return <div style={style} key={"padding_"+index}></div>
             }
-
+            if (raw[row] === undefined) {
+              raw[row] = []
+            }
+            raw[row].push(binding.output)
             // console.log("returning BindingComponent")
-            return <BindingComponent onSelectedKeysChange={onSelectedKeysChange} onOutputChange={onOutputChange} selectedKeys={selectedKeys} style={style} layer={layer} key={name+"_binding_"+index} index={binding.index} output={binding.output}></BindingComponent>;
+            return <BindingComponent
+              onSelectedKeysChange={onSelectedKeysChange}
+              onOutputChange={onOutputChange}
+              selectedKeys={selectedKeys}
+              style={style}
+              layer={layer}
+              key={name+"_binding_"+index}
+              index={binding.index}
+              output={binding.output}/>
         })}
       </div>
+      
+      <textarea
+        readOnly
+        id="renderedKeymap"
+        value={"bindings = <" + outputRaw(raw) + "\n>;"}/>
     </div>
   )
 }

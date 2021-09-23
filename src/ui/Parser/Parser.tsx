@@ -7,6 +7,7 @@ import { initialLily58Keymap, initialFerrisKeymap} from '../../../test';
 import { Binding, Layer } from 'src/devicetree/types';
 import { CombosComponent } from '../Dtsi/CombosComponent';
 import { KeymapComponent } from '../Dtsi/KeymapComponent';
+import { LayerComponent } from '../Dtsi/LayerComponent';
 
 export type LayerKey = {
   layer: number
@@ -129,11 +130,24 @@ export default class ParserApp extends React.Component<Props, State> {
 
     let keymapComponent = <></>
     if (dtsi !== undefined && dtsi.keymap !== undefined) {
-      keymapComponent = <KeymapComponent onSelectedKeysChange={this.handleSelectedKeysChange} onOutputChange={this.handleOutputChange} selectedKeys={this.state.selectedKeys} layers={dtsi.keymap.layers}></KeymapComponent>
+      keymapComponent = <KeymapComponent
+        onSelectedKeysChange={this.handleSelectedKeysChange}
+        onOutputChange={this.handleOutputChange}
+        selectedKeys={this.state.selectedKeys}
+        layers={dtsi.keymap.layers}/>
     }
     let combosComponent = <></>
     if (dtsi !== undefined && dtsi.keymap !== undefined && dtsi.combos !== undefined) {
-      combosComponent = <CombosComponent onSelectedKeysChange={this.handleSelectedKeysChange} selectedKeys={this.state.selectedKeys} layerCount={dtsi.keymap.layers.length} combos={dtsi.combos.combos}></CombosComponent>
+      combosComponent = (
+        <>
+          <CombosComponent
+            onSelectedKeysChange={this.handleSelectedKeysChange}
+            selectedKeys={this.state.selectedKeys}
+            layerCount={dtsi.keymap.layers.length}
+            combos={dtsi.combos.combos}/>
+          
+        </>
+      )
     }
     let parseErrorComponent = <></>
     if (parseError !== "") {

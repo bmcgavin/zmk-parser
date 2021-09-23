@@ -24,8 +24,14 @@ export const LayersComponent: React.FC<Layers> = ({onSelectedKeysChange, onOutpu
     }
 
     const copyLayer = () => {
-
+        console.log("copyLayer")
+        let e = document.getElementById("renderedKeymap") as HTMLInputElement
+        if (e === null) {
+            return
+        }
+        e.select()
         document.execCommand('copy')
+        console.log("copied!")
     }
 
     return (
@@ -38,12 +44,20 @@ export const LayersComponent: React.FC<Layers> = ({onSelectedKeysChange, onOutpu
                 className += " activeLayer"
 
             }
-            return <li key={layer.name} className={className} onClick={() => setLayer(layer.name)}>{layer.name} <a onClick={copyLayer}>Copy</a></li>
+            return <li key={layer.name} className={className} onClick={() => setLayer(layer.name)}>{layer.name}<a onClick={copyLayer}>Copy</a></li>
         })}
         </ul>
-        {layers.map(function(layer, index){
+        {layers.map((layer, index) => {
             if (layer.name == state.activeLayer) {
-                return <LayerComponent onSelectedKeysChange={onSelectedKeysChange} onOutputChange={onOutputChange} layerCount={layers.length} layer={index} selectedKeys={selectedKeys} layout={layout} key={layer.name+"_"+index} name={layer.name} bindings={layer.bindings}></LayerComponent>;
+                return <LayerComponent 
+                    onSelectedKeysChange={onSelectedKeysChange}
+                    onOutputChange={onOutputChange}
+                    layer={index}
+                    selectedKeys={selectedKeys}
+                    layout={layout}
+                    key={layer.name+"_"+index}
+                    name={layer.name}
+                    bindings={layer.bindings}/>
             }
         })}
     </div>
