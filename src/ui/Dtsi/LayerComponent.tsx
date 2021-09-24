@@ -92,6 +92,10 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({
             style.gridColumn = column
             style.gridRow = row
 
+            if (style.gridColumn == w / 2) {
+              style.marginRight = "2em"
+            }
+
             // console.log("binding")
             // console.log(binding)
             // console.log(style)

@@ -44,7 +44,7 @@ export const LayersComponent: React.FC<Layers> = ({onSelectedKeysChange, onOutpu
                 className += " activeLayer"
 
             }
-            return <li key={layer.name} className={className} onClick={() => setLayer(layer.name)}>{layer.name}<a onClick={copyLayer}>Copy</a></li>
+            return <li key={layer.name} className={className} onClick={() => setLayer(layer.name)}>{layer.name}<a onClick={copyLayer}>📋</a></li>
         })}
         </ul>
         {layers.map((layer, index) => {
