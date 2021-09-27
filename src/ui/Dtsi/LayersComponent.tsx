@@ -10,9 +10,10 @@ type Layers = {
     onOutputChange: any,
     selectedKeys: LayerKey[],
     layers: Layer[],
-    layout: Layout,
+    columns: number[],
+    rows: number
 }
-export const LayersComponent: React.FC<Layers> = ({onSelectedKeysChange, onOutputChange, selectedKeys, layers, layout}: Layers) => {
+export const LayersComponent: React.FC<Layers> = ({onSelectedKeysChange, onOutputChange, selectedKeys, layers, columns, rows}: Layers) => {
     
     const initialState = {
         activeLayer: layers[0].name
@@ -44,7 +45,7 @@ export const LayersComponent: React.FC<Layers> = ({onSelectedKeysChange, onOutpu
                 className += " activeLayer"
 
             }
-            return <li key={layer.name} className={className} onClick={() => setLayer(layer.name)}>{layer.name}<a onClick={copyLayer}>📋</a></li>
+            return <li key={layer.name} className={className} onClick={() => setLayer(layer.name)}>{layer.name}</li>
         })}
         </ul>
         {layers.map((layer, index) => {
@@ -54,7 +55,8 @@ export const LayersComponent: React.FC<Layers> = ({onSelectedKeysChange, onOutpu
                     onOutputChange={onOutputChange}
                     layer={index}
                     selectedKeys={selectedKeys}
-                    layout={layout}
+                    columns={columns}
+                    rows={rows}
                     key={layer.name+"_"+index}
                     name={layer.name}
                     bindings={layer.bindings}/>

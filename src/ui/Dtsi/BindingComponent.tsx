@@ -53,7 +53,7 @@ export const BindingComponent: React.FC<BindingWithStyle> = ({onSelectedKeysChan
     },
     [inputValue, index, layer])
 
-    const handleBindingEdit = useEffect((event) => {
+    const handleBindingEdit = useCallback((event) => {
         setToggle(false)
         const d = event.currentTarget.id
         const i = document.getElementById(d.replace("binding", "input"))
