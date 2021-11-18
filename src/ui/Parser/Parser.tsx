@@ -2,10 +2,11 @@ import React, { Fragment } from 'react';
 import { sanitise } from '../../sanitiser';
 
 import { parse, Dtsi } from '../../devicetree'
-import { DtsiComponent } from '../Dtsi/DtsiComponent';
 
-import { initialLily58Keymap, initialFerrisKeymap} from '../../../test';
 import { Binding, Layer } from 'src/devicetree/types';
+import { CombosComponent } from '../Dtsi/CombosComponent';
+import { KeymapComponent } from '../Dtsi/KeymapComponent';
+import { staticKeymaps } from '../../static/static';
 
 export type LayerKey = {
   layer: number
@@ -20,16 +21,27 @@ export type State = {
   keymap: string;
   dtsi: Dtsi | undefined;
   parseError: string | undefined;
-  selectedKeys: LayerKey[]
+  selectedKeys: LayerKey[],
+  columns: number[],
+  rows: number,
+  keymaps: Keymap[]
 };
 
 export const initialState: State = {
   activeTab: "parser",
-  // keymap: initialFerrisKeymap,
-  keymap: initialLily58Keymap,
+  keymap: "",
   dtsi: undefined,
   parseError: undefined,
-  selectedKeys: initialLayerKeys
+  selectedKeys: initialLayerKeys,
+  columns:[],
+  rows: 0,
+  keymaps: JSON.parse(staticKeymaps)
+}
+
+type Keymap = {
+  name: string
+  columns: number[],
+  keymap: string
 }
 
 export default class ParserApp extends React.Component<Props, State> {
@@ -39,7 +51,9 @@ export default class ParserApp extends React.Component<Props, State> {
     this.state = initialState
     this.handleSelectedKeysChange = this.handleSelectedKeysChange.bind(this)
     this.handleOutputChange = this.handleOutputChange.bind(this)
+
   }
+
 
   handleOutputChange(binding: Binding, layer: number) {
     console.log("handleOutputChange")
@@ -114,12 +128,25 @@ export default class ParserApp extends React.Component<Props, State> {
     });
   };
 
-  setParserPage =(e: React.MouseEvent<HTMLLIElement>): void => {
-    this.setState({activeTab: "parser"})
+
+  onLayoutChange = (event:React.ChangeEvent<HTMLInputElement>, row: number): void => {
+    const newCol:number[] = this.state.columns.map((v: number, k: number): number => {if (k==row) {return Number(event.target.value)} return v})
+    this.setState({...this.state,columns: newCol})
   }
 
-  setDtsiPage = (e: React.MouseEvent<HTMLLIElement>): void => {
-    this.setState({activeTab: "dtsi"})
+  selectLayout = (event:React.ChangeEvent<HTMLSelectElement>): void => {
+    let idx = event.target.selectedIndex
+    let keymap = this.state.keymaps[idx-1]
+    this.setState({
+      ...this.state,
+      rows: keymap.columns.length,
+      columns: keymap.columns,
+      keymap: keymap.keymap
+    }, this.parseKeymap)
+  }
+
+  setPage =(name: string): void => {
+    this.setState({activeTab: name})
   }
 
   /*
@@ -130,9 +157,28 @@ export default class ParserApp extends React.Component<Props, State> {
     const dtsi = this.state.dtsi
     const parseError = this.state.parseError
 
-    let dtsiComponent = <></>
-    if (dtsi !== undefined) {
-      dtsiComponent = <DtsiComponent onSelectedKeysChange={this.handleSelectedKeysChange} onOutputChange={this.handleOutputChange} selectedKeys={this.state.selectedKeys} combos={dtsi.combos} keymap={dtsi.keymap}></DtsiComponent>
+    let keymapComponent = <></>
+    if (dtsi !== undefined && dtsi.keymap !== undefined) {
+      keymapComponent = <KeymapComponent
+        onSelectedKeysChange={this.handleSelectedKeysChange}
+        onOutputChange={this.handleOutputChange}
+        selectedKeys={this.state.selectedKeys}
+        layers={dtsi.keymap.layers}
+        columns={this.state.columns}
+        rows={this.state.columns.length}/>
+    }
+    let combosComponent = <></>
+    if (dtsi !== undefined && dtsi.keymap !== undefined && dtsi.combos !== undefined) {
+      combosComponent = (
+        <>
+          <CombosComponent
+            onSelectedKeysChange={this.handleSelectedKeysChange}
+            selectedKeys={this.state.selectedKeys}
+            layerCount={dtsi.keymap.layers.length}
+            combos={dtsi.combos.combos}/>
+          
+        </>
+      )
     }
     let parseErrorComponent = <></>
     if (parseError !== "") {
@@ -142,16 +188,49 @@ export default class ParserApp extends React.Component<Props, State> {
         </div>
       )
     }
+    let columnInputs = []
+    {for (let row = 0; row < this.state.rows;row++) {
+        columnInputs.push(
+          <div key={"columnsFor"+row}>Columns for {row}:
+            <input type="number" value={this.state.columns[row]} name="columnsFor{row}" onChange={(event) => this.onLayoutChange(event, row)}></input>
+          </div>
+        )
+    }}
+
+    const staticKeymapsInputComponent = (
+      this.state.keymaps.map((keymap: Keymap, index: number) => {
+        return <option key={keymap.name} value={index}>{keymap.name}</option>
+      })
+    )
+    
+
     let parserComponent = (
       <Fragment>
         <label htmlFor="keymap">Paste your keymap here:</label><br/>
         <textarea id="keymap" name="keymap" onChange={this.onChange} value={this.state.keymap}></textarea>
         {parseErrorComponent}
+        <div>Rows:
+          <input type="number" name="rows" 
+            value={this.state.rows} 
+            onChange={(event) => {this.setState({...this.state,rows:Number(event.target.value)})}}>
+          </input>
+        </div>
+        {columnInputs}
+        <select onChange={this.selectLayout}>
+          <option value="">Or select a default keymap</option>
+          {staticKeymapsInputComponent}
+        </select>
       </Fragment>
     )
+
     let page = parserComponent
-    if (this.state.activeTab == "dtsi") {
-      page = dtsiComponent
+    switch (this.state.activeTab) {
+      case "keymap":
+        page = keymapComponent
+        break
+      case "combos":
+        page = combosComponent
+        break
     }
 
     return <div className="Parser">
@@ -159,11 +238,14 @@ export default class ParserApp extends React.Component<Props, State> {
         <h3>ZMK Parser</h3>
       </header>
       <ul className="tab-list">
-        <li className="tab" onClick={this.setParserPage}>
+        <li className="tab" onClick={() => this.setPage("parser")}>
           Parser
         </li>
-        <li className="tab" onClick={this.setDtsiPage}>
-          DTSI
+        <li className="tab" onClick={() => this.setPage("keymap")}>
+          Keymap
+        </li>
+        <li className="tab" onClick={() => this.setPage("combos")}>
+          Combos
         </li>
       </ul>
       {page}

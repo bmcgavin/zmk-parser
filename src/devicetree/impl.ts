@@ -5,8 +5,7 @@ const bindingIdent = regex(/\s*\&[^\&>]+/g, "binding")
 const dtsiMarker = regex(/\/\s+\{\s*/g, "/ {");
 const keymapMarker = regex(/\s*keymap\s*/g, "keymap");
 const compatibleMarker = regex(/\s*compatible = \"zmk,[^\"]+\";\s*/g, "compatible = \"zmk,<smth>\"")
-const layerIdent = regex(/[a-zA-Z][a-zA-Z0-9_]*_layer/g, "layer");
-const comboIdent = regex(/[a-zA-Z][a-zA-Z0-9_]*/g, "combo");
+const ident = regex(/[a-zA-Z][a-zA-Z0-9_]*/g, "ident");
 const brace = regex(/\s*[\{\}];?\s*/g, "brace");
 const angleBracket = regex(/\s*[\<\>];?\s*/g, "angle bracket");
 const eq = regex(/\s*=\s*/g, "eq");
@@ -36,7 +35,7 @@ const bindings = map(
 );
 
 const layer = map(
-  sequence<any>([layerIdent, brace, bindings, brace]),
+  sequence<any>([ident, brace, bindings, brace]),
   ([ident, _lb, bindings, _rb]): Layer => ({
     name: ident,
     bindings: bindings
@@ -92,7 +91,7 @@ const comboOptions = map(
 );
 
 const combo = map(
-  sequence<any>([comboIdent, brace, count(comboOptions, 5), brace]),
+  sequence<any>([ident, brace, count(comboOptions, 5), brace]),
   ([name, _b, options]): Combo => {
     let combo: Combo = {
       name,

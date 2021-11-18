@@ -1,2 +1,4 @@
+lib/keymaps/*keymap
 node_modules/
 dist/
+.vscode

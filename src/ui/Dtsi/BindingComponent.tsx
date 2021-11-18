@@ -1,4 +1,4 @@
-import React, { CSSProperties, useCallback, useState } from 'react';
+import React, { CSSProperties, useCallback, useState, useEffect } from 'react';
 import { Binding } from 'src/devicetree/types';
 
 import { LayerKey } from '../Parser/Parser';
@@ -53,12 +53,20 @@ export const BindingComponent: React.FC<BindingWithStyle> = ({onSelectedKeysChan
     },
     [inputValue, index, layer])
 
+    const handleBindingEdit = useCallback((event) => {
+        setToggle(false)
+        const d = event.currentTarget.id
+        const i = document.getElementById(d.replace("binding", "input"))
+        console.log(d)
+        console.log(i)
+    },
+    [])
 
     return ( 
         toggle ? (
-            <div className="binding" style={style} onDoubleClick={() => setToggle(false)} onClick={handleKeyClick} title={alt}>{inner}</div>
+            <div id={"binding_"+index} className="binding" style={style} onClick={handleBindingEdit} title={alt}>{inner}</div>
         ) : (
-            <input type="text" className="binding" style={style} onChange={onChangeHandler} onDoubleClick={handleBindingUpdate} value={inputValue}></input>
+            <input id={"input_"+index} type="text" className="binding" style={style} onChange={onChangeHandler} onClick={handleBindingUpdate} value={inputValue}></input>
         ) 
     )
 }

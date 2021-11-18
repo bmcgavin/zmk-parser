@@ -9,18 +9,32 @@ type LayerWithColumns = {
     onSelectedKeysChange:any,
     onOutputChange: any,
     selectedKeys: LayerKey[],
-    layerCount: number,
     layer: number,
-    layout: Layout,
+    columns: number[],
+    rows: number,
     name: string,
     bindings: Binding[]
 }
-export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange, onOutputChange, selectedKeys, layerCount, layer, layout, name, bindings}: LayerWithColumns) => {
+export const LayerComponent: React.FC<LayerWithColumns> = ({
+  onSelectedKeysChange, 
+  onOutputChange, 
+  selectedKeys,
+  layer,
+  columns,
+  rows,
+  name,
+  bindings
+}: LayerWithColumns) => {
   
+  const outputRaw = (keymap: String[][]): String => {
+    return keymap.map((row) => {
+      return "  "+row.join("\t")
+    }).join("\n")
+  }
 
-  const widest = (layout: Layout): number => Math.max(...layout.columns)
+  const widest = (columns: number[]): number => Math.max(...columns)
 
-  let w = widest(layout)
+  let w = widest(columns)
   
   let padded: Binding[] = []
   let empty: Binding = {
@@ -28,11 +42,11 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
     output: "",
   }
   let copy = bindings.slice()
-  layout.columns.map((column, index) => {
+  columns.map((column, index) => {
     let row = copy.splice(0, column)
     if (w == column) {
       padded.push(...row)
-    } else if (index == layout.rows-1) {
+    } else if (index == rows-1) {
       let totalPad = w - column
       let sidePad = Math.ceil(totalPad / 2)
       padded.push(...Array<Binding>(sidePad).fill(empty))
@@ -46,6 +60,8 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
       padded.push(...row)
     }
   })
+
+  let raw: String[][] = []
 
   return (
   <div>
@@ -64,8 +80,8 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
             let column = index + 1
             let row = 1
 
-            let w = widest(layout)
-            for (const i in layout.columns) {
+            let w = widest(columns)
+            for (const i in columns) {
               colSum += w
               if (index < colSum) {
                 break
@@ -78,17 +94,37 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({onSelectedKeysChange
             style.gridColumn = column
             style.gridRow = row
 
+            if (style.gridColumn == w / 2) {
+              style.marginRight = "2em"
+            }
+
             // console.log("binding")
             // console.log(binding)
             // console.log(style)
             if (binding.index == -1) {
               return <div style={style} key={"padding_"+index}></div>
             }
-
+            if (raw[row] === undefined) {
+              raw[row] = []
+            }
+            raw[row].push(binding.output)
             // console.log("returning BindingComponent")
-            return <BindingComponent onSelectedKeysChange={onSelectedKeysChange} onOutputChange={onOutputChange} selectedKeys={selectedKeys} style={style} layer={layer} key={name+"_binding_"+index} index={binding.index} output={binding.output}></BindingComponent>;
+            return <BindingComponent
+              onSelectedKeysChange={onSelectedKeysChange}
+              onOutputChange={onOutputChange}
+              selectedKeys={selectedKeys}
+              style={style}
+              layer={layer}
+              key={name+"_binding_"+index}
+              index={binding.index}
+              output={binding.output}/>
         })}
       </div>
+      
+      <textarea
+        readOnly
+        id="renderedKeymap"
+        value={"bindings = <" + outputRaw(raw) + "\n>;"}/>
     </div>
   )
 }

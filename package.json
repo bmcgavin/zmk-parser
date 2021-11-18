@@ -6,6 +6,9 @@
   "repository": "https://github.com/bmcgavin/zmk-parser.git",
   "author": "Richard Jones <rich@linuxplicable.org>",
   "license": "MIT",
+  "scripts": {
+    "start": "webpack serve --mode development"
+  },
   "devDependencies": {
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.9",
