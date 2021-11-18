@@ -1,4 +1,4 @@
-import React, { CSSProperties, useCallback, useState } from 'react';
+import React, { CSSProperties, useCallback, useState, useEffect } from 'react';
 import { Binding } from 'src/devicetree/types';
 
 import { LayerKey } from '../Parser/Parser';
