@@ -62,12 +62,8 @@ export const BindingComponent: React.FC<BindingWithStyle> = ({onSelectedKeysChan
     },
     [inputValue, index, layer])
 
-    const handleBindingEdit = useCallback((event) => {
+    const handleBindingEdit = useCallback((_) => {
         setToggle(false)
-        const d = event.currentTarget.id
-        const i = document.getElementById(d.replace("binding", "input"))
-        console.log(d)
-        console.log(i)
     },
     [])
 
@@ -75,7 +71,7 @@ export const BindingComponent: React.FC<BindingWithStyle> = ({onSelectedKeysChan
         toggle ? (
             <div id={"binding_"+index} className="binding" style={style} onDoubleClick={handleBindingEdit} title={alt}>{inner}</div>
         ) : (
-            <input id={"input_"+index} type="text" className="binding" style={style} onKeyUp={onKeyUpHandler} onChange={onChangeHandler} onDoubleClick={handleBindingUpdate} value={inputValue}></input>
+            <input id={"input_"+index} type="text" className="binding" style={style} onKeyUp={onKeyUpHandler} autoFocus onChange={onChangeHandler} onDoubleClick={handleBindingUpdate} value={inputValue}></input>
         ) 
     )
 }
