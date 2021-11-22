@@ -40,6 +40,15 @@ export const BindingComponent: React.FC<BindingWithStyle> = ({onSelectedKeysChan
     const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value)
     }
+    const onKeyUpHandler = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.code == "Enter") {
+            handleBindingUpdate()
+        }
+        if (event.code == "Escape") {
+            //revert
+            setToggle(true)
+        }
+    }
 
     const [toggle, setToggle] = useState(true)
 
@@ -64,9 +73,9 @@ export const BindingComponent: React.FC<BindingWithStyle> = ({onSelectedKeysChan
 
     return ( 
         toggle ? (
-            <div id={"binding_"+index} className="binding" style={style} onClick={handleBindingEdit} title={alt}>{inner}</div>
+            <div id={"binding_"+index} className="binding" style={style} onDoubleClick={handleBindingEdit} title={alt}>{inner}</div>
         ) : (
-            <input id={"input_"+index} type="text" className="binding" style={style} onChange={onChangeHandler} onClick={handleBindingUpdate} value={inputValue}></input>
+            <input id={"input_"+index} type="text" className="binding" style={style} onKeyUp={onKeyUpHandler} onChange={onChangeHandler} onDoubleClick={handleBindingUpdate} value={inputValue}></input>
         ) 
     )
 }
