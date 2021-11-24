@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
+  mode: "development",
   entry: './src/index.tsx',
   devtool: 'inline-source-map',
   devServer: {
@@ -9,6 +10,10 @@ module.exports = {
     contentBase: path.join(__dirname, 'dist'),
     compress: true,
     port: 9500,
+  },
+  experiments: {
+    syncWebAssembly: true,
+    asyncWebAssembly: true,
   },
   module: {
     rules: [
@@ -21,10 +26,23 @@ module.exports = {
         test: /\.css$/i,
         use: ["style-loader", "css-loader"],
       },
+      {
+        test: /tree-sitter-devicetree\.wasm$/,
+        type: "javascript/auto",
+        loader: "file-loader",
+        options: {
+          publicPath: "dist/"
+        },
+      },
     ],
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
+    fallback: {
+      "path": require.resolve("path-browserify"),
+      "buffer": require.resolve("buffer-browserify"),
+      "fs": false
+    }
   },
   output: {
     filename: 'bundle.js',

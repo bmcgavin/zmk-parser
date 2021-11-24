@@ -1,7 +1,8 @@
 import React, { Fragment } from 'react';
-import { sanitise } from '../../sanitiser';
+// import { sanitise } from '../../sanitiser';
+import { Document, KeymapParser } from '../../tree-sitter';
 
-import { parse, Dtsi } from '../../devicetree'
+import { Dtsi } from '../../devicetree'
 
 import { Binding, Layer } from 'src/devicetree/types';
 import { CombosComponent } from '../Dtsi/CombosComponent';
@@ -45,9 +46,17 @@ type Keymap = {
 }
 
 export default class ParserApp extends React.Component<Props, State> {
+
+  async init(): Promise<KeymapParser> {
+    const kp = await KeymapParser.init();
+    return kp
+
+  }
+  parser: Promise<KeymapParser>
   constructor(props: Props) {
     super(props);
-
+    const pP = Promise.resolve(this.init())
+    this.parser = pP.then((p) => {return p})
     this.state = initialState
     this.handleSelectedKeysChange = this.handleSelectedKeysChange.bind(this)
     this.handleOutputChange = this.handleOutputChange.bind(this)
@@ -107,7 +116,9 @@ export default class ParserApp extends React.Component<Props, State> {
         // console.log(this.state.keymap)
         // console.log("KMS")
         // console.log(sanitise(this.state.keymap))
-        state.dtsi = parse(sanitise(this.state.keymap)) as Dtsi
+        // state.dtsi = parse(sanitise(this.state.keymap)) as Dtsi
+
+        this.parser.then(p => p.parse(new Document(this.state.keymap)))
       } catch (e) {
         // console.log("e")
         // console.log(e)

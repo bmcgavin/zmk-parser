@@ -15,6 +15,8 @@
     "css-loader": "^6.1.0",
     "html-webpack-plugin": "^5.3.2",
     "style-loader": "^3.1.0",
+    "tree-sitter-cli": "^0.20.1",
+    "tree-sitter-javascript": "^0.19.0",
     "ts-loader": "^9.2.3",
     "typescript": "^4.3.5",
     "webpack": "^5.44.0",
@@ -22,7 +24,11 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
+    "path-browserify": "^1.0.1",
+    "buffer-browserify": "^0.2.5",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "tree-sitter": "^0.20.1",
+    "web-tree-sitter": "^0.19.4"
   }
 }
