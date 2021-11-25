@@ -26,21 +26,12 @@ module.exports = {
         test: /\.css$/i,
         use: ["style-loader", "css-loader"],
       },
-      {
-        test: /tree-sitter-devicetree\.wasm$/,
-        type: "javascript/auto",
-        loader: "file-loader",
-        options: {
-          publicPath: "dist/"
-        },
-      },
     ],
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
     fallback: {
       "path": require.resolve("path-browserify"),
-      "buffer": require.resolve("buffer-browserify"),
       "fs": false
     }
   },
