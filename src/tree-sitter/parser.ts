@@ -50,6 +50,9 @@
             return new KeymapParser(parser)
         }
 
+        getLanguage(): Parser.Language {
+            return this.parser.getLanguage()
+        }
         // private _onDidChangeParse = new vscode.EventEmitter<ParseChangedEvent>();
         // public onDidChangeParse = this._onDidChangeParse.event;
 
@@ -63,7 +66,7 @@
          * Returns an up-to-date parse tree for a document.
          */
         parse(document: Document): Parser.Tree {
-            console.log(this.parser.parse(document.toString()).rootNode.toString())
+            // console.log(this.parser.parse(document.toString()).rootNode.toString())
             return this.trees[document.toString()] ?? this.openDocument(document);
         }
 
