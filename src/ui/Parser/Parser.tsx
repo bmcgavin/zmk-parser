@@ -137,67 +137,43 @@ export default class ParserApp extends React.Component<Props, State> {
     
   }
 
-  getKeymap = (tree: Tree) => {
-    let bindingsNodesStartIndices: number[] = []
+  getKeymap = (tree: Tree): Keymap => {
+    const keymap: Keymap = []
     console.log("getKeymap")
     console.log(tree.rootNode.toString())
-    const q = this.language?.query("(document (node (node (node (property) @bindings))))")
-    if (q) {
-      const qm = q.captures(tree.rootNode)
-      console.log(qm)
+    const bindingsQuery = this.language?.query("(document (node (node (node (property name: (identifier) value: (integer_cells) @bindings)))))")
+    if (bindingsQuery) {
+      const bindings = bindingsQuery.captures(tree.rootNode)
+      console.log(bindings)
+      // const kp = `((reference label: (identifier)) (identifier)) @kp`
+      // const mo = `((reference label: (identifier)) (integer_literal)) @mo`
+      // const trans = `((reference label: (identifier)) @trans (#match? @trans "trans"))`
+      // const keycodesQuery = this.language?.query(`[${kp} ${mo} ${trans}]`)
+      const keycodesQuery = this.language?.query(`(reference label: (identifier)) (_) @binding`)
+      if (keycodesQuery) {
+        bindings.forEach(binding => {
+          const keycodes = keycodesQuery.captures(binding.node)
+          console.log(keycodes)
+          keycodes.forEach(keycode => {
+            console.log(keycode.node.text)
+            switch(keycode.node.text) {
+              case "&kp":
+
+              case "&trans":
+
+              case "&mo":
+
+              case "&ext_power":
+
+              case "&bt":
+
+            }
+          })
+        })
+      }
     }
     return tree
 
-    let tc = tree.walk()
-    console.log(tc.gotoFirstChild())
-    do {
-      console.log(tc.currentNode().type)
-      console.log(tc.currentNode().text)
-      if (tc.nodeType == "node" && tc.nodeText.substr(0, 6) == "keymap") {
-        const nodes = tc.currentNode().walk()
-        //nodes is a property (compatible), node (layer), layers have comments and property (bindings)
-        tc.gotoFirstChild()
-      }
-      if (tc.nodeType == "property" && 
-        tc.nodeText.substr(0, 8) == "bindings") {
-        if (!bindingsNodesStartIndices.includes(tc.currentNode().startIndex)) {
-          console.log(bindingsNodesStartIndices)
-          console.log(tc.currentNode())
-          console.log("got bindings")
-          const startIndex = tc.currentNode().startIndex
-          bindingsNodesStartIndices.push(startIndex)
-          tc.gotoParent() // layer
-
-          console.log(tc.currentNode().type)
-          console.log(tc.currentNode())
-          console.log(tc.currentNode().text)
-          // tc.gotoParent() // keymap
-
-          // console.log(tc.currentNode().type)
-          // console.log(tc.currentNode().text)
-          while (tc.currentNode().startIndex < startIndex) {
-            tc.gotoNextSibling()
-            console.log(tc.currentNode().text)
-            console.log(tc.currentNode().startIndex)
-
-          }
-            // tc.gotoParent()
-        } else {
-          console.log("Skipping already-seen bindings at")
-          console.log(tc.currentNode().startIndex)
-          tc.gotoParent() // layer
-
-      console.log(tc.currentNode().type)
-      console.log(tc.currentNode().text)
-          tc.gotoParent() // keymap
-
-      console.log(tc.currentNode().type)
-      console.log(tc.currentNode().text)
-          // tc.gotoParent()
-        }
-      }
-      // console.log(tc.nodeText)
-    } while (tc.gotoNextSibling() == true);
   }
 
   onChange = (e: React.FormEvent<HTMLTextAreaElement>): void => {
