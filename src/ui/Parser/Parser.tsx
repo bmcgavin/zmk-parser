@@ -156,7 +156,7 @@ export default class ParserApp extends React.Component<Props, State> {
       const notTrans = `(reference label: (identifier)) @other (#not-match? @other "^&trans") ${args}+`
       // const queryString = `[(${notTrans}) (${trans})]`
       // const queryString = `((reference) @reference (#match? @reference "^&") . (identifier) @binding (#not-match? @binding "^&"))`
-      const queryString = `[(${either}) (${either} . ${args} @arg) (${either} . ${args} @arg1 . ${args} @arg2)]`
+      const queryString = `[(${either}) (${either} . ${args} @arg1 . ${args}? @arg2)]`
       console.log(queryString)
       const keycodesQuery = this.language?.query(queryString)
       
