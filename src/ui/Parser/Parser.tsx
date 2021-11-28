@@ -127,7 +127,7 @@ export default class ParserApp extends React.Component<Props, State> {
             state.parseError = e
           }
           if (typeof(state.tree) != "undefined") {
-            this.getKeymap(state.tree)
+            this.getDtsi(state.tree)
           }
           return state
         }, () => {
@@ -137,25 +137,35 @@ export default class ParserApp extends React.Component<Props, State> {
     
   }
 
-  getKeymap = (tree: Tree): Keymap => {
-    const keymap: Keymap = []
-    console.log("getKeymap")
+  getDtsi = (tree: Tree): Dtsi => {
+    const dtsi: Dtsi = {
+      keymap: undefined,
+      combos: undefined
+    }
+    console.log("getDtsi")
     console.log(tree.rootNode.toString())
-    const bindingsQuery = this.language?.query("(document (node (node (node (property name: (identifier) value: (integer_cells) @bindings)))))")
+    const bindingsQuery = this.language?.query(`(document (node (node name: (identifier) @node (#match? @node "^keymap$") (node (property name: (identifier) value: (integer_cells) @bindings)))))`)
     if (bindingsQuery) {
       const bindings = bindingsQuery.captures(tree.rootNode)
       console.log(bindings)
-      // const kp = `((reference label: (identifier)) (identifier)) @kp`
-      // const mo = `((reference label: (identifier)) (integer_literal)) @mo`
-      // const trans = `((reference label: (identifier)) @trans (#match? @trans "trans"))`
-      // const keycodesQuery = this.language?.query(`[${kp} ${mo} ${trans}]`)
-      const keycodesQuery = this.language?.query(`(reference label: (identifier)) (_) @binding`)
+      const args = `[(identifier) (integer_literal) (call_expression)]`
+      const one = `((reference label: (identifier)) ${args}) @one`
+      const two = `((reference label: (identifier)) ${args} . ${args}) @two`
+      const either = `(reference label: (identifier)) @reference`
+      const trans = `(reference label: (identifier)) @trans (#match? @trans "^&trans")`
+      const notTrans = `(reference label: (identifier)) @other (#not-match? @other "^&trans") ${args}+`
+      // const queryString = `[(${notTrans}) (${trans})]`
+      // const queryString = `((reference) @reference (#match? @reference "^&") . (identifier) @binding (#not-match? @binding "^&"))`
+      const queryString = `[(${either}) (${either} . ${args} @arg) (${either} . ${args} @arg1 . ${args} @arg2)]`
+      console.log(queryString)
+      const keycodesQuery = this.language?.query(queryString)
+      
       if (keycodesQuery) {
         bindings.forEach(binding => {
           const keycodes = keycodesQuery.captures(binding.node)
           console.log(keycodes)
           keycodes.forEach(keycode => {
-            console.log(keycode.node.text)
+            console.log(`${keycode.name} ${keycode.node.text}`)
             switch(keycode.node.text) {
               case "&kp":
 
@@ -172,7 +182,7 @@ export default class ParserApp extends React.Component<Props, State> {
         })
       }
     }
-    return tree
+    return dtsi
 
   }
 
@@ -273,7 +283,7 @@ export default class ParserApp extends React.Component<Props, State> {
         </div>
         {columnInputs}
         <select onChange={this.selectLayout}>
-          <option value="">Or select a default keymap</option>
+          <option value="romac">Or select a default keymap</option>
           {staticKeymapsInputComponent}
         </select>
       </Fragment>
