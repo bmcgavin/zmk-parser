@@ -311,7 +311,7 @@ export default class ParserApp extends React.Component<Props, State> {
         </div>
         {columnInputs}
         <select onChange={this.selectLayout}>
-          <option value="romac">Or select a default keymap</option>
+          <option value="">Or select a default keymap</option>
           {staticKeymapsInputComponent}
         </select>
       </Fragment>
