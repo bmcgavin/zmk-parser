@@ -2,9 +2,8 @@ import React, { Fragment } from 'react';
 // import { sanitise } from '../../sanitiser';
 import { Document, KeymapParser } from '../../tree-sitter';
 
-import { Dtsi } from '../../devicetree'
+import { Dtsi, Binding, Layer, Keymap, Combo, Combos } from 'src/devicetree/types';
 
-import { Binding, Layer } from 'src/devicetree/types';
 import { CombosComponent } from '../Dtsi/CombosComponent';
 import { KeymapComponent } from '../Dtsi/KeymapComponent';
 import { staticKeymaps } from '../../static/static';
@@ -26,7 +25,7 @@ export type State = {
   selectedKeys: LayerKey[],
   columns: number[],
   rows: number,
-  keymaps: Keymap[],
+  keymaps: LocalKeymap[],
   tree: Tree | undefined
 };
 
@@ -42,7 +41,7 @@ export const initialState: State = {
   tree: undefined
 }
 
-type Keymap = {
+type LocalKeymap = {
   name: string
   columns: number[],
   keymap: string
@@ -127,7 +126,7 @@ export default class ParserApp extends React.Component<Props, State> {
             state.parseError = e
           }
           if (typeof(state.tree) != "undefined") {
-            this.getDtsi(state.tree)
+            state.dtsi = this.getDtsi(state.tree)
           }
           return state
         }, () => {
@@ -137,53 +136,82 @@ export default class ParserApp extends React.Component<Props, State> {
     
   }
 
-  getDtsi = (tree: Tree): Dtsi => {
+  getDtsi(tree: Tree): Dtsi {
     const dtsi: Dtsi = {
-      keymap: undefined,
+      keymap: {
+        layers: []
+      },
       combos: undefined
     }
-    console.log("getDtsi")
-    console.log(tree.rootNode.toString())
-    const bindingsQuery = this.language?.query(`(document (node (node name: (identifier) @node (#match? @node "^keymap$") (node (property name: (identifier) value: (integer_cells) @bindings)))))`)
+
+    // console.log("getDtsi")
+    // console.log(tree.rootNode.toString())
+    const bindingsQuery = this.language?.query(`(document (node (node name: (identifier) @keymapOrCombo (#match? @keymapOrCombo "^keymap$") (node name: (identifier) @layer (property name: (identifier) value: (integer_cells) @bindings)))))`)
     if (bindingsQuery) {
-      const bindings = bindingsQuery.captures(tree.rootNode)
-      console.log(bindings)
+      const bindingsTree = bindingsQuery.captures(tree.rootNode)
+      // console.log(bindingsTree)
       const args = `[(identifier) (integer_literal) (call_expression)]`
-      const one = `((reference label: (identifier)) ${args}) @one`
-      const two = `((reference label: (identifier)) ${args} . ${args}) @two`
       const either = `(reference label: (identifier)) @reference`
-      const trans = `(reference label: (identifier)) @trans (#match? @trans "^&trans")`
-      const notTrans = `(reference label: (identifier)) @other (#not-match? @other "^&trans") ${args}+`
-      // const queryString = `[(${notTrans}) (${trans})]`
-      // const queryString = `((reference) @reference (#match? @reference "^&") . (identifier) @binding (#not-match? @binding "^&"))`
       const queryString = `[(${either}) (${either} . ${args} @arg1 . ${args}? @arg2)]`
-      console.log(queryString)
+      // console.log(queryString)
       const keycodesQuery = this.language?.query(queryString)
       
       if (keycodesQuery) {
-        bindings.forEach(binding => {
-          const keycodes = keycodesQuery.captures(binding.node)
-          console.log(keycodes)
-          keycodes.forEach(keycode => {
-            console.log(`${keycode.name} ${keycode.node.text}`)
-            switch(keycode.node.text) {
-              case "&kp":
+        let layerIndex = -1
+        bindingsTree.forEach(binding => {
+          switch (binding.name) {
+            case "layer":
+              layerIndex++
+              let layerName = binding.node.text
+              // console.log(layerName)
+              if (dtsi.keymap?.layers) {
+                dtsi.keymap.layers[layerIndex] = {
+                  name: layerName,
+                  bindings: []
+                }
+              }
+            case "bindings":
+              const keycodes = keycodesQuery.captures(binding.node)
+              // console.log(keycodes)
+              let keyIndex = 0
+              keycodes.forEach((keycode, index) => {
+                // console.log(`${index} ${keycode.name} ${keycode.node.text}`)
+                switch(keycode.name) {
+                case "reference":
+                  // switch(keycode.node.text) {
+                  // case "&kp":
+                    let output = keycode.node.text
+                    // console.log(keycodes[index+1])
+                    if (keycodes[index+1]?.name == "arg1") {
+                      // console.log(keycodes[index+1].node.text)
+                      output += " "+keycodes[index+1].node.text
+                    }
+                    // console.log(keycodes[index+2])
+                    if (keycodes[index+2]?.name == "arg2") {
+                      // console.log(keycodes[index+2].node.text)
+                      output += " "+keycodes[index+2].node.text
+                    }
+                    // console.log(output)
+                    dtsi.keymap?.layers[layerIndex].bindings.push({index: keyIndex, output: output})
+                  // case "&trans":
 
-              case "&trans":
-
-              case "&mo":
-
-              case "&ext_power":
-
-              case "&bt":
-
+                  // case "&mo":
+      
+                  // case "&ext_power":
+      
+                  // case "&bt":
+                  // }
+                  keyIndex++
+      
+                }
+              })
             }
-          })
         })
       }
     }
+    // console.log(dtsi.keymap)
     return dtsi
-
+  
   }
 
   onChange = (e: React.FormEvent<HTMLTextAreaElement>): void => {
@@ -264,7 +292,7 @@ export default class ParserApp extends React.Component<Props, State> {
     }}
 
     const staticKeymapsInputComponent = (
-      this.state.keymaps.map((keymap: Keymap, index: number) => {
+      this.state.keymaps.map((keymap: LocalKeymap, index: number) => {
         return <option key={keymap.name} value={index}>{keymap.name}</option>
       })
     )
