@@ -58,8 +58,7 @@ export default class ParserApp extends React.Component<Props, State> {
   language: Language | undefined = undefined
   constructor(props: Props) {
     super(props);
-    const pP = Promise.resolve(this.init())
-    this.parser = pP.then((p) => {
+    this.parser = this.init().then((p) => {
       this.language = p.getLanguage()
       return p
     })
