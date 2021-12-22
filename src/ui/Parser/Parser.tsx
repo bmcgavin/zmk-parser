@@ -130,8 +130,16 @@ export default class ParserApp extends React.Component<Props, State> {
 
 
   onLayoutChange = (event:React.ChangeEvent<HTMLInputElement>, row: number): void => {
-    const newCol:number[] = this.state.columns.map((v: number, k: number): number => {if (k==row) {return Number(event.target.value)} return v})
-    this.setState({...this.state,columns: newCol})
+    const value = Number(event.target.value)
+    this.setState(({ rows, columns: oldColumns }) => {
+      let columns = []
+      for (let i = 0; i < rows; i++) {
+        const original = oldColumns[i] || 0
+        columns.push(i === row ? value : original)
+      }
+
+      return { columns }
+    })
   }
 
   selectLayout = (event:React.ChangeEvent<HTMLSelectElement>): void => {
