@@ -145,7 +145,7 @@ export default class ParserApp extends React.Component<Props, State> {
 
     // console.log("getDtsi")
     // console.log(tree.rootNode.toString())
-    const bindingsQuery = this.language?.query(`(document (node (node name: (identifier) @keymapOrCombo (#match? @keymapOrCombo "^keymap$") (node name: (identifier) @layer (property name: (identifier) value: (integer_cells) @bindings)))))`)
+    const bindingsQuery = this.language?.query(`(document (node (node name: (identifier) @keymapOrCombo (#match? @keymapOrCombo "^keymap$") (node name: (identifier) @layer (property name: (identifier) @bindingOrSensor (#match? @bindingOrSensor "^bindings$") value: (integer_cells) @bindings)))))`)
     if (bindingsQuery) {
       const bindingsTree = bindingsQuery.captures(tree.rootNode)
       // console.log(bindingsTree)
@@ -157,11 +157,12 @@ export default class ParserApp extends React.Component<Props, State> {
       
       if (keycodesQuery) {
         let layerIndex = -1
-        bindingsTree.forEach(binding => {
-          switch (binding.name) {
+        bindingsTree.forEach(capture => {
+          // console.log(capture.name+": "+capture.node.text)
+          switch (capture.name) {
             case "layer":
               layerIndex++
-              let layerName = binding.node.text
+              let layerName = capture.node.text
               // console.log(layerName)
               if (dtsi.keymap?.layers) {
                 dtsi.keymap.layers[layerIndex] = {
@@ -170,7 +171,7 @@ export default class ParserApp extends React.Component<Props, State> {
                 }
               }
             case "bindings":
-              const keycodes = keycodesQuery.captures(binding.node)
+              const keycodes = keycodesQuery.captures(capture.node)
               // console.log(keycodes)
               let keyIndex = 0
               keycodes.forEach((keycode, index) => {
