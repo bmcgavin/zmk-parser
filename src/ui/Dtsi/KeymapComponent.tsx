@@ -21,8 +21,6 @@ type KeymapWithKeys = {
 export const KeymapComponent: React.FC<KeymapWithKeys> = ({onSelectedKeysChange, onOutputChange, selectedKeys, layers, columns, rows}: KeymapWithKeys) => {
 
     return <div>
-        <div>Keymap</div>
-
         <LayersComponent
             onSelectedKeysChange={onSelectedKeysChange}
             onOutputChange={onOutputChange}
@@ -30,7 +28,7 @@ export const KeymapComponent: React.FC<KeymapWithKeys> = ({onSelectedKeysChange,
             layers={layers}
             columns={columns}
             rows={rows}>
-        </LayersComponent>;
+        </LayersComponent>
         
     </div>
 }

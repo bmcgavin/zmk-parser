@@ -15,6 +15,9 @@ type Layers = {
 }
 export const LayersComponent: React.FC<Layers> = ({onSelectedKeysChange, onOutputChange, selectedKeys, layers, columns, rows}: Layers) => {
     
+    if (layers.length == 0) {
+        return <></>
+    }
     const initialState = {
         activeLayer: layers[0].name
     }
