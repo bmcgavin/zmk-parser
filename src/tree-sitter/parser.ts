@@ -64,7 +64,10 @@ import Parser, { Tree } from 'web-tree-sitter';
 
             // console.log("getDtsi")
             // console.log(tree.rootNode.toString())
-            const bindingsQuery = this.query(`(document (node (node name: (identifier) @keymapOrCombo (#match? @keymapOrCombo "^keymap$") (node name: (identifier) @layer (property name: (identifier) @bindingOrSensor (#match? @bindingOrSensor "^bindings$") value: (integer_cells) @bindings)))))`)
+            const bindingsQuery = this.query(`(document (node [
+                (node name: (identifier) @keymapOrCombo (#match? @keymapOrCombo "^keymap$") (node name: (identifier) @layer (property name: (identifier) @bindingOrSensor (#match? @bindingOrSensor "^bindings$") value: (integer_cells) @bindings)))
+                (labeled_item item: (node name: (identifier) @keymapOrCombo (#match? @keymapOrCombo "^keymap$") (node name: (identifier) @layer (property name: (identifier) @bindingOrSensor (#match? @bindingOrSensor "^bindings$") value: (integer_cells) @bindings))))
+            ]))`)
             if (bindingsQuery) {
             const bindingsTree = bindingsQuery.captures(tree.rootNode)
             // console.log(bindingsTree)
