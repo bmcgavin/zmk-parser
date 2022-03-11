@@ -19,10 +19,10 @@ import Parser, { Tree } from 'web-tree-sitter';
         }
     }
 
-    async function createParser() {
+    async function createParser(languagePath: string) {
         await Parser.init();
         const parser = new Parser();
-        const language = await Parser.Language.load('./tree-sitter-devicetree.wasm');
+        const language = await Parser.Language.load(languagePath);
         parser.setLanguage(language)
         return parser
         
@@ -32,8 +32,8 @@ import Parser, { Tree } from 'web-tree-sitter';
      * Parses `.keymap` files.
      */
     export class KeymapParser {
-        static async init(): Promise<KeymapParser> {
-            const parser = await createParser();
+        static async init(languagePath: string): Promise<KeymapParser> {
+            const parser = await createParser(languagePath);
             return new KeymapParser(parser)
         }
 

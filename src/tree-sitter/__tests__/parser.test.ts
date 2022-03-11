@@ -3,7 +3,7 @@ import { KeymapParser, Document } from '../parser'
 import { Dtsi } from '../../devicetree/types';
 
 const parse = (doc: Document): Promise<Dtsi> => {
-    const parser = KeymapParser.init()
+    const parser = KeymapParser.init('./dist/tree-sitter-devicetree.wasm')
     return parser.then(p => p.getDtsi(p.parse(doc)))
 }
 

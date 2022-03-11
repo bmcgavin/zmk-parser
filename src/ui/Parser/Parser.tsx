@@ -16,7 +16,9 @@ export type LayerKey = {
 
 const initialLayerKeys: LayerKey[] = []
 
-export interface Props {}
+export interface Props {
+  languagePath: string
+}
 export type State = {
   activeTab: string;
   keymap: string;
@@ -41,15 +43,15 @@ export const initialState: State = {
 
 export default class ParserApp extends React.Component<Props, State> {
 
-  async init(): Promise<KeymapParser> {
-    const kp = await KeymapParser.init();
+  async init(languagePath: string): Promise<KeymapParser> {
+    const kp = await KeymapParser.init(languagePath);
     return kp
 
   }
   parser: Promise<KeymapParser>
   constructor(props: Props) {
     super(props);
-    this.parser = this.init().then((p) => {
+    this.parser = this.init(props.languagePath).then((p) => {
       return p
     })
     this.state = initialState
