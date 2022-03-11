@@ -14,7 +14,7 @@ Use yarn to install dependencies:
 
 Then run a local server:
 
-    yarn start
+    yarn dev
 
 (which just runs `webpack serve --mode development`)
 
