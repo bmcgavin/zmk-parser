@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 
 import { staticKeymaps } from '../../static/static';
 
-type ParserInputs = {
+export type ParserInputs = {
   onKeymapChange: any
   onLayoutChange: any
   keymap: string
@@ -21,16 +21,20 @@ export const ParserComponent: React.FC<ParserInputs> = ({onKeymapChange, onLayou
     
   const keymaps = JSON.parse(staticKeymaps)
 
-  const onRowsChange = (newRows: number) => {
+  const onRowsChange = (inputRows: string) => {
     let newColumns = columns
+    let newRows = Number(inputRows)
     if (newRows < rows) {
-      newColumns = columns.slice(0, newRows)
+      newColumns = newColumns.slice(0, newRows)
     } else if (newRows > rows) {
-      newColumns = columns.concat([0])
+      for (let i = rows; i< newRows; i++) {
+        newColumns = newColumns.concat([0])
+      }
     }
     handleLayoutUpdate(newRows, newColumns)
   }
-  const onColumnChange = (columnForRow: number, row: number) => {
+  const onColumnChange = (inputColumnForRow: string, row: number) => {
+    let columnForRow = Number(inputColumnForRow)
     let newColumns = columns.slice(0, row)
     newColumns.push(columnForRow)
     newColumns.push(...columns.slice(row+1, columns.length))
@@ -65,7 +69,7 @@ export const ParserComponent: React.FC<ParserInputs> = ({onKeymapChange, onLayou
     const col = columns[row] == undefined ? 0 : columns[row]
     columnInputs.push(
       <div key={"columnsFor"+row}>Columns for {row}:
-        <input data-testid="columns-{row}-input" type="number" value={col} name="columnsFor{row}" onChange={(event) => onColumnChange(event.target.value as unknown as number, row)}></input>
+        <input data-testid={"columns-"+row+"-input"} type="number" value={col} name="columnsFor{row}" onChange={(event) => onColumnChange(event.target.value, row)}></input>
       </div>
     )
   }
@@ -78,12 +82,12 @@ export const ParserComponent: React.FC<ParserInputs> = ({onKeymapChange, onLayou
   
   return <div>
     <label htmlFor="keymap">Paste your keymap here:</label><br/>
-    <textarea data-testid="keymap-textarea" id="keymap" name="keymap" onChange={(event) => handleKeymapUpdate(event.target.value as unknown as string, rows, columns)} value={keymap}></textarea>
+    <textarea data-testid="keymap-textarea" id="keymap" name="keymap" onChange={(event) => handleKeymapUpdate(event.target.value, rows, columns)} value={keymap}></textarea>
     {parseErrorComponent}
     <div>Rows:
       <input data-testid="rows-input" type="number" name="rows" 
         value={rows} 
-        onChange={(event) => onRowsChange(event.target.value as unknown as number)}>
+        onChange={(event) => onRowsChange(event.target.value)}>
       </input>
     </div>
     {columnInputs}
