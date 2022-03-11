@@ -1,13 +1,13 @@
-import React, { Fragment } from 'react';
+import React, { useEffect } from 'react';
 // import { sanitise } from '../../sanitiser';
 import { Document, KeymapParser } from '../../tree-sitter';
 
-import { Dtsi, Binding, Layer, Keymap, Combo, Combos } from 'src/devicetree/types';
+import { Dtsi, Binding, Layer } from 'src/devicetree/types';
 
 import { CombosComponent } from '../Dtsi/CombosComponent';
 import { KeymapComponent } from '../Dtsi/KeymapComponent';
-import { staticKeymaps } from '../../static/static';
-import { SyntaxNode, Tree, Language } from 'web-tree-sitter'
+import { ParserComponent } from './ParserComponent';
+import { Tree } from 'web-tree-sitter'
 
 export type LayerKey = {
   layer: number
@@ -16,16 +16,17 @@ export type LayerKey = {
 
 const initialLayerKeys: LayerKey[] = []
 
-type Props = {}
+export interface Props {
+  languagePath: string
+}
 export type State = {
   activeTab: string;
   keymap: string;
   dtsi: Dtsi | undefined;
-  parseError: string | undefined;
+  parseError: string;
   selectedKeys: LayerKey[],
   columns: number[],
   rows: number,
-  keymaps: LocalKeymap[],
   tree: Tree | undefined
 };
 
@@ -33,45 +34,36 @@ export const initialState: State = {
   activeTab: "parser",
   keymap: "",
   dtsi: undefined,
-  parseError: undefined,
+  parseError: "",
   selectedKeys: initialLayerKeys,
   columns:[],
   rows: 0,
-  keymaps: JSON.parse(staticKeymaps),
   tree: undefined
-}
-
-type LocalKeymap = {
-  name: string
-  columns: number[],
-  keymap: string
 }
 
 export default class ParserApp extends React.Component<Props, State> {
 
-  async init(): Promise<KeymapParser> {
-    const kp = await KeymapParser.init();
+  async init(languagePath: string): Promise<KeymapParser> {
+    const kp = await KeymapParser.init(languagePath);
     return kp
 
   }
   parser: Promise<KeymapParser>
-  language: Language | undefined = undefined
   constructor(props: Props) {
     super(props);
-    this.parser = this.init().then((p) => {
-      this.language = p.getLanguage()
+    this.parser = this.init(props.languagePath).then((p) => {
       return p
     })
     this.state = initialState
     this.handleSelectedKeysChange = this.handleSelectedKeysChange.bind(this)
     this.handleOutputChange = this.handleOutputChange.bind(this)
-
+    this.handleLayoutChange = this.handleLayoutChange.bind(this)
+    this.handleKeymapChange = this.handleKeymapChange.bind(this)
   }
 
-
   handleOutputChange(binding: Binding, layer: number) {
-    console.log("handleOutputChange")
-    console.log(binding)
+    // console.log("handleOutputChange")
+    // console.log(binding)
     if (this.state.dtsi?.keymap?.layers[layer] === undefined) {
       return
     }
@@ -102,15 +94,35 @@ export default class ParserApp extends React.Component<Props, State> {
   handleSelectedKeysChange(selectedKeys: LayerKey[]) {
     this.setState({
       selectedKeys: selectedKeys
-    }, () => console.log(selectedKeys))
+    }
+    //, () => console.log(selectedKeys)
+    )
   }
 
-  componentDidMount() {
-    this.parseKeymap()
+  handleLayoutChange(rows: number, columns: number[]) {
+    this.setState({
+      rows, columns
+    }
+    //, () => console.log(columns)
+    )
   }
+
+  handleKeymapChange(keymap: string, rows: number, columns: number[]) {
+    // console.log(keymap)
+    this.setState({keymap, rows, columns}, () => {
+      this.parseKeymap()
+    })
+  }
+
+  // Removed this because of the unmounted component warning
+  //  but also it's no longer needed (hangover from pre-populated
+  //  keymap textarea for testing)
+  // componentDidMount() {
+  //   this.parseKeymap()
+  // }
 
   parseKeymap = (): void => {
-    console.log("parseKeymap")
+    // console.log("parseKeymap")
     this.parser.then(
       parser => {
         this.setState((previousState: State) =>{
@@ -119,132 +131,19 @@ export default class ParserApp extends React.Component<Props, State> {
             parseError: "",
           }
           try {
-            const parsed = parser.parse(new Document(this.state.keymap))
-            state.tree = parsed
+            state.tree = parser.parse(new Document(this.state.keymap))
           } catch (e) {
             state.parseError = e
           }
           if (typeof(state.tree) != "undefined") {
-            state.dtsi = this.getDtsi(state.tree)
+            state.dtsi = parser.getDtsi(state.tree)
           }
           return state
         }, () => {
+          // console.log(this.state.dtsi)
         })
       }
     )
-    
-  }
-
-  getDtsi(tree: Tree): Dtsi {
-    const dtsi: Dtsi = {
-      keymap: {
-        layers: []
-      },
-      combos: undefined
-    }
-
-    // console.log("getDtsi")
-    // console.log(tree.rootNode.toString())
-    const bindingsQuery = this.language?.query(`(document (node (node name: (identifier) @keymapOrCombo (#match? @keymapOrCombo "^keymap$") (node name: (identifier) @layer (property name: (identifier) @bindingOrSensor (#match? @bindingOrSensor "^bindings$") value: (integer_cells) @bindings)))))`)
-    if (bindingsQuery) {
-      const bindingsTree = bindingsQuery.captures(tree.rootNode)
-      // console.log(bindingsTree)
-      const args = `[(identifier) (integer_literal) (call_expression)]`
-      const either = `(reference label: (identifier)) @reference`
-      const queryString = `[(${either}) (${either} . ${args} @arg1 . ${args}? @arg2)]`
-      // console.log(queryString)
-      const keycodesQuery = this.language?.query(queryString)
-      
-      if (keycodesQuery) {
-        let layerIndex = -1
-        bindingsTree.forEach(capture => {
-          // console.log(capture.name+": "+capture.node.text)
-          switch (capture.name) {
-            case "layer":
-              layerIndex++
-              let layerName = capture.node.text
-              // console.log(layerName)
-              if (dtsi.keymap?.layers) {
-                dtsi.keymap.layers[layerIndex] = {
-                  name: layerName,
-                  bindings: []
-                }
-              }
-            case "bindings":
-              const keycodes = keycodesQuery.captures(capture.node)
-              // console.log(keycodes)
-              let keyIndex = 0
-              keycodes.forEach((keycode, index) => {
-                // console.log(`${index} ${keycode.name} ${keycode.node.text}`)
-                switch(keycode.name) {
-                case "reference":
-                  // switch(keycode.node.text) {
-                  // case "&kp":
-                    let output = keycode.node.text
-                    // console.log(keycodes[index+1])
-                    if (keycodes[index+1]?.name == "arg1") {
-                      // console.log(keycodes[index+1].node.text)
-                      output += " "+keycodes[index+1].node.text
-                    }
-                    // console.log(keycodes[index+2])
-                    if (keycodes[index+2]?.name == "arg2") {
-                      // console.log(keycodes[index+2].node.text)
-                      output += " "+keycodes[index+2].node.text
-                    }
-                    // console.log(output)
-                    dtsi.keymap?.layers[layerIndex].bindings.push({index: keyIndex, output: output})
-                  // case "&trans":
-
-                  // case "&mo":
-      
-                  // case "&ext_power":
-      
-                  // case "&bt":
-                  // }
-                  keyIndex++
-      
-                }
-              })
-            }
-        })
-      }
-    }
-    // console.log(dtsi.keymap)
-    return dtsi
-  
-  }
-
-  onChange = (e: React.FormEvent<HTMLTextAreaElement>): void => {
-    this.setState({ keymap: e.currentTarget.value }, () => {
-      // console.log("onChange")
-      console.log(this.state.keymap)
-      this.parseKeymap()
-    });
-  };
-
-
-  onLayoutChange = (event:React.ChangeEvent<HTMLInputElement>, row: number): void => {
-    const value = Number(event.target.value)
-    this.setState(({ rows, columns: oldColumns }) => {
-      let columns = []
-      for (let i = 0; i < rows; i++) {
-        const original = oldColumns[i] || 0
-        columns.push(i === row ? value : original)
-      }
-
-      return { columns }
-    })
-  }
-
-  selectLayout = (event:React.ChangeEvent<HTMLSelectElement>): void => {
-    let idx = event.target.selectedIndex
-    let keymap = this.state.keymaps[idx-1]
-    this.setState({
-      ...this.state,
-      rows: keymap.columns.length,
-      columns: keymap.columns,
-      keymap: keymap.keymap
-    }, this.parseKeymap)
   }
 
   setPage =(name: string): void => {
@@ -257,72 +156,39 @@ export default class ParserApp extends React.Component<Props, State> {
   render() {
     
     const dtsi = this.state.dtsi
-    const parseError = this.state.parseError
 
     let keymapComponent = <></>
     if (dtsi !== undefined && dtsi.keymap !== undefined) {
       keymapComponent = <KeymapComponent
+        data-testid="keymap"
         onSelectedKeysChange={this.handleSelectedKeysChange}
         onOutputChange={this.handleOutputChange}
         selectedKeys={this.state.selectedKeys}
         layers={dtsi.keymap.layers}
         columns={this.state.columns}
-        rows={this.state.columns.length}/>
+        rows={this.state.columns?.length}/>
     }
     let combosComponent = <></>
     if (dtsi !== undefined && dtsi.keymap !== undefined && dtsi.combos !== undefined) {
       combosComponent = (
-        <>
-          <CombosComponent
-            onSelectedKeysChange={this.handleSelectedKeysChange}
-            selectedKeys={this.state.selectedKeys}
-            layerCount={dtsi.keymap.layers.length}
-            combos={dtsi.combos.combos}/>
-          
-        </>
+        <CombosComponent
+          data-testid="combos"
+          onSelectedKeysChange={this.handleSelectedKeysChange}
+          selectedKeys={this.state.selectedKeys}
+          layerCount={dtsi.keymap.layers.length}
+          combos={dtsi.combos.combos}/>
       )
     }
-    let parseErrorComponent = <></>
-    if (parseError !== "") {
-      parseErrorComponent = (
-        <div className="parseError">
-          {parseError}
-        </div>
-      )
-    }
-    let columnInputs = []
-    {for (let row = 0; row < this.state.rows;row++) {
-        columnInputs.push(
-          <div key={"columnsFor"+row}>Columns for {row}:
-            <input type="number" value={this.state.columns[row]} name="columnsFor{row}" onChange={(event) => this.onLayoutChange(event, row)}></input>
-          </div>
-        )
-    }}
-
-    const staticKeymapsInputComponent = (
-      this.state.keymaps.map((keymap: LocalKeymap, index: number) => {
-        return <option key={keymap.name} value={index}>{keymap.name}</option>
-      })
-    )
-    
 
     let parserComponent = (
-      <Fragment>
-        <label htmlFor="keymap">Paste your keymap here:</label><br/>
-        <textarea id="keymap" name="keymap" onChange={this.onChange} value={this.state.keymap}></textarea>
-        {parseErrorComponent}
-        <div>Rows:
-          <input type="number" name="rows" 
-            value={this.state.rows} 
-            onChange={(event) => {this.setState({...this.state,rows:Number(event.target.value)})}}>
-          </input>
-        </div>
-        {columnInputs}
-        <select onChange={this.selectLayout}>
-          <option value="">Or select a default keymap</option>
-          {staticKeymapsInputComponent}
-        </select>
-      </Fragment>
+      <ParserComponent
+        data-testid="parser"
+        onKeymapChange={this.handleKeymapChange}
+        onLayoutChange={this.handleLayoutChange}
+        keymap={this.state.keymap}
+        rows={this.state.rows}
+        columns={this.state.columns}
+        parseError={this.state.parseError}/>
     )
 
     let page = parserComponent
