@@ -1,3 +1,5 @@
 lib/keymaps/*keymap
 node_modules/
 .vscode
+dist/bundle.js*
+dist/index.html
