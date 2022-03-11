@@ -55,5 +55,40 @@ describe("KeymapParser", () => {
         
     
     })
+
+    test('labelled keymap single layer single binding', async () => {
+      const doc = new Document(`
+/ { 
+    keymap0: keymap {
+        compatible = "zmk,keymap";
+        default_layer {
+            bindings = <
+                &trans
+            >;
+        };
+    };
+};
+      `)
+      const expected: Dtsi = {
+        keymap: {
+          layers: [
+              {
+                  name: "default_layer",
+                  bindings: [
+                      {
+                          index: 0,
+                          output: "&trans"
+                      }
+                  ]
+              }
+          ]
+        },
+        combos: undefined
+      }
+      
+      expect(await parse(doc)).toStrictEqual(expected)
+        
+    
+    })
   
   })
