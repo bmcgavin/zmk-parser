@@ -29,7 +29,7 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
-    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.2",
     "jsdom": "^19.0.0",
     "express": "^4.17.3",
