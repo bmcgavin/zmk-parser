@@ -12,10 +12,11 @@ type BindingWithStyle = {
     layer: number,
     style: CSSProperties,
     index: number,
-    output: string
+    output: string,
+    keymapOrCombo: string
 }
 
-export const BindingComponent: React.FC<BindingWithStyle> = ({onSelectedKeysChange, onOutputChange, selectedKeys, layer, style, index, output}: BindingWithStyle) => {
+export const BindingComponent: React.FC<BindingWithStyle> = ({onSelectedKeysChange, onOutputChange, selectedKeys, layer, style, index, output, keymapOrCombo}: BindingWithStyle) => {
 
     const handleKeyClick = useCallback(() => {
         const layerKey: LayerKey = {
@@ -68,11 +69,19 @@ export const BindingComponent: React.FC<BindingWithStyle> = ({onSelectedKeysChan
     [])
 
     return ( 
-        toggle ? (
-            <div id={"binding_"+index} className="binding" style={style} onDoubleClick={handleBindingEdit} title={alt}>{inner}</div>
-        ) : (
-            <input id={"input_"+index} type="text" className="binding" style={style} onKeyUp={onKeyUpHandler} autoFocus onChange={onChangeHandler} onDoubleClick={handleBindingUpdate} value={inputValue}></input>
-        ) 
+        (keymapOrCombo == "keymap") ? 
+            toggle ? (
+                <div id={"binding_"+index} className="binding" style={style} onDoubleClick={handleBindingEdit} title={alt}>{inner}</div>
+            ) : (
+                <input id={"input_"+index} type="text" className="binding" style={style} onBlur={event => setToggle(true)} onKeyUp={onKeyUpHandler} autoFocus onChange={onChangeHandler} onDoubleClick={handleBindingUpdate} value={inputValue}></input>
+            ) 
+        :
+            toggle ? (
+                <div id={"binding_"+index} className="binding" style={style} onClick={handleKeyClick} title={alt}>{inner}</div>
+            ) : (
+                <div id={"binding_"+index} className="binding selected" style={style} onBlur={event => setToggle(true)} onClick={handleKeyClick}></div>
+            ) 
+
     )
 }
 

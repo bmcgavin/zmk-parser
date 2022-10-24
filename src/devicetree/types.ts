@@ -13,7 +13,7 @@
 
 export type Dtsi = {
   keymap: Keymap | undefined;
-  combos: Combos | undefined;
+  combos: Combo[] | undefined;
 }
 
 export type Keymap = {
@@ -28,10 +28,6 @@ export type Layer = {
 export type Binding = {
   index: number
   output: string
-}
-
-export type Combos = {
-  combos: Combo[]
 }
 
 export type Combo = {
