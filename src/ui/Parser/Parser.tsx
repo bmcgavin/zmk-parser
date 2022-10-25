@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 // import { sanitise } from '../../sanitiser';
 import { Document, KeymapParser } from '../../tree-sitter';
 
-import { Dtsi, Binding, Layer } from 'src/devicetree/types';
+import { Dtsi, Binding, Layer, Combo } from 'src/devicetree/types';
 
 import { CombosComponent } from '../Dtsi/CombosComponent';
 import { KeymapComponent } from '../Dtsi/KeymapComponent';
@@ -59,6 +59,8 @@ export default class ParserApp extends React.Component<Props, State> {
     this.handleOutputChange = this.handleOutputChange.bind(this)
     this.handleLayoutChange = this.handleLayoutChange.bind(this)
     this.handleKeymapChange = this.handleKeymapChange.bind(this)
+    this.handleLayersChange = this.handleLayersChange.bind(this)
+    this.handleCombosChange = this.handleCombosChange.bind(this)
   }
 
   handleOutputChange(binding: Binding, layer: number) {
@@ -89,6 +91,41 @@ export default class ParserApp extends React.Component<Props, State> {
     }
     
     this.setState({dtsi})
+  }
+
+  handleLayersChange(layers: Layer[]) {
+    
+    if (this.state.dtsi?.keymap === undefined) {
+      return
+    }
+
+    const keymap = {
+      ...this.state.dtsi.keymap,
+      layers: layers
+    }
+    const dtsi = {
+      ...this.state.dtsi,
+      keymap
+    }
+    this.setState({
+      dtsi
+    })
+  }
+
+  handleCombosChange(combos: Combo[]) {
+    
+    if (this.state.dtsi === undefined) {
+      return
+    }
+
+    const dtsi = {
+      ...this.state.dtsi,
+      combos: combos
+    }
+    
+    this.setState({
+      dtsi
+    })
   }
 
   handleSelectedKeysChange(selectedKeys: LayerKey[]) {
@@ -131,7 +168,7 @@ export default class ParserApp extends React.Component<Props, State> {
             parseError: "",
           }
           try {
-            state.tree = parser.parse(new Document(this.state.keymap))
+            state.tree = parser.parse(new Document(this.state.keymap))  
           } catch (e) {
             state.parseError = e
           }
@@ -158,25 +195,36 @@ export default class ParserApp extends React.Component<Props, State> {
     const dtsi = this.state.dtsi
 
     let keymapComponent = <></>
-    if (dtsi !== undefined && dtsi.keymap !== undefined) {
-      keymapComponent = <KeymapComponent
-        data-testid="keymap"
-        onSelectedKeysChange={this.handleSelectedKeysChange}
-        onOutputChange={this.handleOutputChange}
-        selectedKeys={this.state.selectedKeys}
-        layers={dtsi.keymap.layers}
-        columns={this.state.columns}
-        rows={this.state.columns?.length}/>
-    }
     let combosComponent = <></>
+
     if (dtsi !== undefined && dtsi.keymap !== undefined && dtsi.combos !== undefined) {
-      combosComponent = (
-        <CombosComponent
-          data-testid="combos"
+      keymapComponent = (
+        <KeymapComponent
+          data-testid="keymap"
           onSelectedKeysChange={this.handleSelectedKeysChange}
+          onOutputChange={this.handleOutputChange}
           selectedKeys={this.state.selectedKeys}
-          layerCount={dtsi.keymap.layers.length}
-          combos={dtsi.combos.combos}/>
+          layers={dtsi.keymap.layers}
+          columns={this.state.columns}
+          rows={this.state.columns?.length}
+          keymapOrCombo="keymap"
+          combos={dtsi.combos}
+          onCombosChange={this.handleCombosChange}
+          onLayersChange={this.handleLayersChange}/>
+      )
+      combosComponent = (
+        <KeymapComponent
+          data-testid="combo"
+          onSelectedKeysChange={this.handleSelectedKeysChange}
+          onOutputChange={this.handleOutputChange}
+          selectedKeys={this.state.selectedKeys}
+          layers={dtsi.keymap.layers}
+          columns={this.state.columns}
+          rows={this.state.columns?.length}
+          keymapOrCombo="combo"
+          combos={dtsi.combos}
+          onCombosChange={this.handleCombosChange}
+          onLayersChange={this.handleLayersChange}/>
       )
     }
 
