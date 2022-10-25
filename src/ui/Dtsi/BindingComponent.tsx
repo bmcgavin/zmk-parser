@@ -65,17 +65,12 @@ export const BindingComponent: React.FC<BindingWithStyle> = ({onSelectedKeysChan
 
     const handleBindingEdit = useCallback((_) => {
         setEditing(true)
-        console.log('editting useCallback')
     },
     [])
 
     useEffect(() => {
-        console.log('editing in effect')
-        console.log(editting)
-        console.log(index)
         const d = document.getElementById(`input_${index}`) as HTMLInputElement
-        console.log('getting input')
-        console.log(d)
+
         if (d === null) {
             return
         }
