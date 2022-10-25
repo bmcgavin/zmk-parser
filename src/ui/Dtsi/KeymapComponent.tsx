@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Keymap, Layer } from 'src/devicetree/types';
+import { Combo, Keymap, Layer } from 'src/devicetree/types';
 import { LayerKey } from '../Parser/Parser';
 
 import { LayersComponent } from './LayersComponent';
@@ -15,21 +15,26 @@ type KeymapWithKeys = {
     selectedKeys: LayerKey[],
     layers: Layer[],
     columns: number[],
-    rows: number
+    rows: number,
+    keymapOrCombo: string,
+    combos: Combo[],
+    onCombosChange: any,
+    onLayersChange: any
 }
 
-export const KeymapComponent: React.FC<KeymapWithKeys> = ({onSelectedKeysChange, onOutputChange, selectedKeys, layers, columns, rows}: KeymapWithKeys) => {
+export const KeymapComponent: React.FC<KeymapWithKeys> = ({onSelectedKeysChange, onOutputChange, selectedKeys, layers, columns, rows, keymapOrCombo, combos, onCombosChange, onLayersChange}: KeymapWithKeys) => {
 
-    return <div>
-        <LayersComponent
+    return <LayersComponent
             onSelectedKeysChange={onSelectedKeysChange}
             onOutputChange={onOutputChange}
             selectedKeys={selectedKeys}
             layers={layers}
             columns={columns}
-            rows={rows}>
+            rows={rows}
+            keymapOrCombo={keymapOrCombo}
+            combos={combos}
+            onCombosChange={onCombosChange}
+            onLayersChange={onLayersChange}>
         </LayersComponent>
-        
-    </div>
 }
 

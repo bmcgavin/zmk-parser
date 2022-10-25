@@ -12,10 +12,11 @@ type BindingWithStyle = {
     layer: number,
     style: CSSProperties,
     index: number,
-    output: string
+    output: string,
+    keymapOrCombo: string
 }
 
-export const BindingComponent: React.FC<BindingWithStyle> = ({onSelectedKeysChange, onOutputChange, selectedKeys, layer, style, index, output}: BindingWithStyle) => {
+export const BindingComponent: React.FC<BindingWithStyle> = ({onSelectedKeysChange, onOutputChange, selectedKeys, layer, style, index, output, keymapOrCombo}: BindingWithStyle) => {
 
     const handleKeyClick = useCallback(() => {
         const layerKey: LayerKey = {
@@ -46,14 +47,14 @@ export const BindingComponent: React.FC<BindingWithStyle> = ({onSelectedKeysChan
         }
         if (event.code == "Escape") {
             //revert
-            setToggle(true)
+            setEditing(false)
         }
     }
 
-    const [toggle, setToggle] = useState(true)
+    const [editting, setEditing] = useState(false)
 
     const handleBindingUpdate = useCallback(() => {
-        setToggle(true)
+        setEditing(false)
         const binding: Binding = {
             index: index,
             output: inputValue
@@ -63,16 +64,35 @@ export const BindingComponent: React.FC<BindingWithStyle> = ({onSelectedKeysChan
     [inputValue, index, layer])
 
     const handleBindingEdit = useCallback((_) => {
-        setToggle(false)
+        setEditing(true)
     },
     [])
 
+    useEffect(() => {
+        const d = document.getElementById(`input_${index}`) as HTMLInputElement
+
+        if (d === null) {
+            return
+        }
+        d.select()
+    },
+    [editting, index])
+
     return ( 
-        toggle ? (
-            <div id={"binding_"+index} className="binding" style={style} onDoubleClick={handleBindingEdit} title={alt}>{inner}</div>
-        ) : (
-            <input id={"input_"+index} type="text" className="binding" style={style} onKeyUp={onKeyUpHandler} autoFocus onChange={onChangeHandler} onDoubleClick={handleBindingUpdate} value={inputValue}></input>
-        ) 
+        (keymapOrCombo == "keymap") ? 
+            editting ? (
+                <input id={"input_"+index} type="text" className="binding" style={style} onBlur={_ => setEditing(false)} onKeyUp={onKeyUpHandler} autoFocus onChange={onChangeHandler} onDoubleClick={handleBindingUpdate} value={inputValue}></input>
+            ) : (
+                <div id={"binding_"+index} className="binding" style={style} onDoubleClick={handleBindingEdit} title={alt}>{inner}</div>
+            ) 
+        :
+            editting ? (                
+                <div id={"binding_"+index} className="binding selected" style={style} onBlur={event => setEditing(false)} onClick={handleKeyClick}></div>
+            ) : (
+                <div id={"binding_"+index} className="binding" style={style} onClick={handleKeyClick} title={alt}>{inner}</div>
+
+            ) 
+
     )
 }
 

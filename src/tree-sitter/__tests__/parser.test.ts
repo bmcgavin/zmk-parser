@@ -14,7 +14,7 @@ describe("KeymapParser", () => {
         keymap: {
           layers: []
         },
-        combos: undefined
+        combos: []
       }
       
       expect(await parse(doc)).toStrictEqual(expected)
@@ -48,7 +48,7 @@ describe("KeymapParser", () => {
               }
           ]
         },
-        combos: undefined
+        combos: []
       }
       
       expect(await parse(doc)).toStrictEqual(expected)
@@ -83,7 +83,47 @@ describe("KeymapParser", () => {
               }
           ]
         },
-        combos: undefined
+        combos: []
+      }
+      
+      expect(await parse(doc)).toStrictEqual(expected)
+        
+    
+    })
+
+    test('single combo', async () => {
+      const doc = new Document(`
+/ { 
+  combos {
+    compatible = "zmk,combos";
+    combo_esc {
+        timeout-ms = <50>;
+        key-positions = <0 1>;
+        bindings = <&kp ESC>;
+    };
+  };
+};
+      `)
+      const expected: Dtsi = {
+        keymap: {
+          layers: []
+        },
+        combos: [
+          {
+            name: "combo_esc",
+            timeout: 50,
+            bindings: [
+              {
+              index: -1,
+              output: "&kp ESC"
+              }
+            ],
+            positions: [0, 1],
+            layers: [],
+            slowRelease: false
+          }
+        ]
+      
       }
       
       expect(await parse(doc)).toStrictEqual(expected)
@@ -91,4 +131,61 @@ describe("KeymapParser", () => {
     
     })
   
+    test('multiple combos', async () => {
+      const doc = new Document(`
+/ { 
+  combos {
+    compatible = "zmk,combos";
+    combo_esc {
+        timeout-ms = <50>;
+        key-positions = <0 1>;
+        bindings = <&kp ESC>;
+    };
+    combo_tab {
+      timeout-ms = <50>;
+      key-positions = <10 11>;
+      bindings = <&kp TAB>;
+    };
+  };
+};
+      `)
+      const expected: Dtsi = {
+        keymap: {
+          layers: []
+        },
+        combos: [
+          {
+            name: "combo_esc",
+            timeout: 50,
+            bindings: [
+              {
+              index: -1,
+              output: "&kp ESC"
+              }
+            ],
+            positions: [0, 1],
+            layers: [],
+            slowRelease: false
+          },
+          {
+            name: "combo_tab",
+            timeout: 50,
+            bindings: [
+              {
+              index: -1,
+              output: "&kp TAB"
+              }
+            ],
+            positions: [10, 11],
+            layers: [],
+            slowRelease: false
+          }
+        ]
+      
+      }
+      
+      expect(await parse(doc)).toStrictEqual(expected)
+        
+    
+    })
   })

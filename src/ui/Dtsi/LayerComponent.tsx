@@ -1,8 +1,9 @@
 import React, { CSSProperties, Fragment } from 'react';
-import { Binding } from 'src/devicetree/types';
+import { Binding, Combo } from 'src/devicetree/types';
 import { LayerKey } from '../Parser/Parser';
 
 import { BindingComponent } from './BindingComponent';
+import { CombosComponent } from './CombosComponent';
 import { Layout } from './KeymapComponent';
 
 type LayerWithColumns = {
@@ -13,7 +14,11 @@ type LayerWithColumns = {
     columns: number[],
     rows: number,
     name: string,
-    bindings: Binding[]
+    bindings: Binding[],
+    keymapOrCombo: string,
+    layerCount: number,
+    combos: Combo[],
+    onCombosChange: any
 }
 export const LayerComponent: React.FC<LayerWithColumns> = ({
   onSelectedKeysChange, 
@@ -23,7 +28,11 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({
   columns,
   rows,
   name,
-  bindings
+  bindings,
+  keymapOrCombo,
+  layerCount,
+  combos,
+  onCombosChange
 }: LayerWithColumns) => {
   
   const outputRaw = (keymap: String[][]): String => {
@@ -64,7 +73,7 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({
   let raw: String[][] = []
 
   return (
-  <div>
+  <div className="layerlayer">
     <div className="layer">
       
         {padded.map(function(binding, index){
@@ -117,14 +126,26 @@ export const LayerComponent: React.FC<LayerWithColumns> = ({
               layer={layer}
               key={name+"_binding_"+index}
               index={binding.index}
-              output={binding.output}/>
+              output={binding.output}
+              keymapOrCombo={keymapOrCombo}/>
         })}
+
+        
       </div>
       
-      <textarea
-        readOnly
-        id="renderedKeymap"
-        value={"bindings = <" + outputRaw(raw) + "\n>;"}/>
+      {keymapOrCombo == "keymap" ?
+          <textarea
+          readOnly
+          id="renderedKeymap"
+          value={"bindings = <" + outputRaw(raw) + "\n>;"}/>
+        :
+        <CombosComponent
+          data-testid="combos"
+          onSelectedKeysChange={onSelectedKeysChange}
+          selectedKeys={selectedKeys}
+          layerCount={layerCount}
+          combos={combos}
+          onCombosChange={onCombosChange}/>}
     </div>
   )
 }
