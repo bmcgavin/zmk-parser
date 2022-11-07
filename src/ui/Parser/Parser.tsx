@@ -170,7 +170,7 @@ export default class ParserApp extends React.Component<Props, State> {
           try {
             state.tree = parser.parse(new Document(this.state.keymap))  
           } catch (e) {
-            state.parseError = e
+            state.parseError = e as string
           }
           if (typeof(state.tree) != "undefined") {
             state.dtsi = parser.getDtsi(state.tree)
